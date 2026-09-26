@@ -1,0 +1,1 @@
+-- Concourse table definitions are applied to the currently selected database.
