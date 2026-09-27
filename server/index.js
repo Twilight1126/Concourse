@@ -21,11 +21,15 @@ app.use("/api/applications", applicationsRouter);
 
 app.use((error, _request, response, _next) => {
     console.error(error);
+    const status = error.status || 500;
 
-    response.status(500).json({
+    response.status(status).json({
         error: {
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Something went wrong.",
+            code: error.code || "INTERNAL_SERVER_ERROR",
+            message:
+               status === 500
+                ? "Something went wrong."
+                : error.message,
         },
     });
 });

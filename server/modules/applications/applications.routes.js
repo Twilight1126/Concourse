@@ -1,7 +1,11 @@
 import { Router } from "express";
-import { listApplications } from "./applications.controller.js";
+import {
+    listApplications,
+    createApplication
+} from "./applications.controller.js";
 
 
 export const applicationsRouter = Router();
 
 applicationsRouter.get("/", listApplications);
+applicationsRouter.post("/", createApplication);
