@@ -99,3 +99,15 @@ export async function insertApplication(application) {
 
     return result.affectedRows > 0;
 }
+  // Delete an application by its ID.
+export async function deleteApplicationById(id) {
+    const [result] = await databasePool.execute(
+        `
+            DELETE FROM applications
+            WHERE id = ?
+        `,
+        [id]
+    );
+
+    return result.affectedRows > 0;
+}

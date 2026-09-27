@@ -1,4 +1,5 @@
 import {
+    deleteApplicationById,
     findAllApplications,
     findApplicationById,
     insertApplication,
@@ -33,8 +34,21 @@ export async function createApplication(input = {}) {
     const applicationId = await insertApplication(application);
     return await findApplicationById(applicationId);
 }
+  // Return one application or clear 404 error
+    export async function getApplicationById(id) {
+    const application = await findApplicationById(id);
 
- export async function updateApplication(id, input = {}) {
+    if (!application) {
+        const error = new Error("Application not found.");
+        error.status = 404;
+        error.code = "APPLICATION_NOT_FOUND";
+
+        throw error;
+    }
+    return application;
+}
+
+export async function updateApplication(id, input = {}) {
     const  existingApplication = await findApplicationById(id);
     if (!existingApplication) {
         const error = new Error("Application not found.");
@@ -85,4 +99,16 @@ export async function createApplication(input = {}) {
 
     await updateApplicationById(id, application);
     return await findApplicationById(id);
+}
+
+  // Delete one application or return 404 error
+export async function deleteApplication(id) {
+    const deleted = await deleteApplicationById(id);
+
+    if (!deleted) {
+        const error = new Error("Application not found.");
+        error.status = 404;
+        error.code = "APPLICATION_NOT_FOUND";
+        throw error;
+    }
 }

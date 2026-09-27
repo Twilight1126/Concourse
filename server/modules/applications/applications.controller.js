@@ -1,7 +1,10 @@
 import {
     createApplication as createApplicationService,
+    deleteApplication as deleteApplicationService,
     getAllApplications,
+    getApplicationById as getApplicationByIdService,
     updateApplication as updateApplicationService,
+
 } from "./applications.service.js";
 
 export async function listApplications(_request, response) {
@@ -29,4 +32,19 @@ export async function updateApplication(request, response) {
     response.status(200).json({
         data: application,
     });
+}
+  // Return one application using its URL ID.
+export async function getApplicationById(request, response) {
+    const application = await getApplicationByIdService(
+        request.params.id
+    );
+
+    response.status(200).json({
+        data: application,
+    });
+}
+  // Delete one application using its URL ID.
+export async function deleteApplication(request, response) {
+    await deleteApplicationService(request.params.id);
+    response.status(204).send();
 }
