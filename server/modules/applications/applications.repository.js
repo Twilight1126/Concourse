@@ -71,3 +71,31 @@ export async function insertApplication(application) {
 
     return result.insertId;
 }
+
+  export async function updateApplicationById(id, application) {
+    const [result] = await databasePool.execute(
+        `   UpDATE applications
+            SET
+                company_name = ?,
+                job_title = ?,
+                job_url = ?,
+                source = ?,
+                status = ?,
+                applied_at = ?,
+                notes = ?
+            WHERE id = ?
+        `,
+        [
+            application.company_name,
+            application.job_title,
+            application.job_url,
+            application.source,
+            application.status,
+            application.applied_at,
+            application.notes,
+            id
+        ],
+    );
+
+    return result.affectedRows > 0;
+}
