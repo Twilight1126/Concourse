@@ -17,13 +17,16 @@ CREATE TABLE IF NOT EXISTS applications (
     PRIMARY KEY (id),
 
     CONSTRAINT chk_application_status
-    CHECK (status IN (
-      'saved',
-      'applied',
-      'interviewing',
-      'offered',
-      'rejected',
-      'withdrawn'
-      )
-   )
+    CHECK (
+    status IN (
+        'saved',
+        'applied',
+        'screening',
+        'interviewing',
+        'offered',
+        'rejected',
+        'ghosted',
+        'withdrawn'
+    )
+)
 );

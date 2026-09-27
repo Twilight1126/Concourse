@@ -6,6 +6,27 @@ import {
     updateApplicationById,
 } from "./applications.repository.js";
 
+// status values accepted by the application API,
+const APPLICATION_STATUSES = new Set([
+    "saved",
+    "applied",
+    "screening",
+    "interviewing",
+    "offered",
+    "rejected",
+    "ghosted",
+    "withdrawn"
+]);
+// Reject a status outside the application pipeline.
+function validateApplicationStatus(status) {
+    if (!APPLICATION_STATUSES.has(status)) {
+        const error = new Error("Invalid application status.");
+        error.status = 400;
+        error.code = "INVALID_APPLICATION_STATUS";
+        throw error;
+    }
+}
+
 export function getAllApplications() {
     return findAllApplications();
 }
@@ -31,11 +52,13 @@ export async function createApplication(input = {}) {
         throw error;
     }
 
+    validateApplicationStatus(application.status);
+
     const applicationId = await insertApplication(application);
     return await findApplicationById(applicationId);
 }
-  // Return one application or clear 404 error
-    export async function getApplicationById(id) {
+// Return one application or clear 404 error
+export async function getApplicationById(id) {
     const application = await findApplicationById(id);
 
     if (!application) {
@@ -49,7 +72,7 @@ export async function createApplication(input = {}) {
 }
 
 export async function updateApplication(id, input = {}) {
-    const  existingApplication = await findApplicationById(id);
+    const existingApplication = await findApplicationById(id);
     if (!existingApplication) {
         const error = new Error("Application not found.");
         error.status = 404;
@@ -59,35 +82,35 @@ export async function updateApplication(id, input = {}) {
     }
     const application = {
         company_name:
-          input.company_name === undefined
-            ? existingApplication.company_name
-            : input.company_name?.trim(),
+            input.company_name === undefined
+                ? existingApplication.company_name
+                : input.company_name?.trim(),
         job_title:
-          input.job_title === undefined
-            ? existingApplication.job_title
-            : input.job_title?.trim(),
+            input.job_title === undefined
+                ? existingApplication.job_title
+                : input.job_title?.trim(),
         job_url:
-          input.job_url === undefined
-            ? existingApplication.job_url
-            : input.job_url?.trim() || null,
+            input.job_url === undefined
+                ? existingApplication.job_url
+                : input.job_url?.trim() || null,
         source:
-          input.source === undefined
-            ? existingApplication.source
-            : input.source?.trim() || null,
+            input.source === undefined
+                ? existingApplication.source
+                : input.source?.trim() || null,
         status:
-          input.status === undefined
-            ? existingApplication.status
-            : input.status?.trim(),
+            input.status === undefined
+                ? existingApplication.status
+                : input.status?.trim(),
         applied_at:
-          input.applied_at === undefined
-            ? existingApplication.applied_at
-            : input.applied_at || null,
+            input.applied_at === undefined
+                ? existingApplication.applied_at
+                : input.applied_at || null,
         notes:
-          input.notes === undefined
-            ? existingApplication.notes
-            : input.notes?.trim() || null,
+            input.notes === undefined
+                ? existingApplication.notes
+                : input.notes?.trim() || null,
     };
-        if (!application.company_name || !application.job_title) {
+    if (!application.company_name || !application.job_title) {
         const error = new Error(
             "Company name and job title are required."
         );
@@ -96,12 +119,12 @@ export async function updateApplication(id, input = {}) {
 
         throw error;
     }
-
+    validateApplicationStatus(application.status);
     await updateApplicationById(id, application);
     return await findApplicationById(id);
 }
 
-  // Delete one application or return 404 error
+// Delete one application or return 404 error
 export async function deleteApplication(id) {
     const deleted = await deleteApplicationById(id);
 
