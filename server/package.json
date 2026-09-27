@@ -1,0 +1,17 @@
+{
+ "name": "concourse-server",
+ "version": "1.0.0",
+ "private": "true",
+ "description": "Express API for Concourse job application and outreach tracker",
+ "type": "module",
+ "main": "index.js",
+ "scripts": {
+  "dev": "node --watch index.js",
+  "start": "node index.js"
+ },
+ "dependencies": {
+  "dotenv": "^18.0.4",
+  "express": "^5.2.1",
+  "mysql2": "^3.24.4"
+ }
+}
