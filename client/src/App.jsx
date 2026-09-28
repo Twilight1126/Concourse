@@ -1,121 +1,137 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import { useEffect, useState } from "react";
+import { createApplication, deleteApplication, getApplications, updateApplication } from "./api/applications";
+import ApplicationForm from "./features/applications/components/ApplicationForm";
+import ApplicationList from './features/applications/components/ApplicationList'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [applications, setApplications] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState(null)
+  const [updatingId, setUpdatingId] = useState(null)
+  const [deletingId, setDeletingId] = useState(null)
+
+  // GET: Logic (Load existing application when the page opens.)
+  useEffect(() => {
+    async function loadApplications() {
+      try {
+        const data = await getApplications();
+        setApplications(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadApplications();
+  }, []);
+
+  // POST: Logic (Create an application and add the returned row to the current list.)
+  async function handleCreateApplication(formValues) {
+    setIsSubmitting(true)
+    setError(null)
+
+    try {
+      const newApplication = await createApplication(formValues)
+
+      setApplications((currentApplications) => [
+        newApplication,
+        ...currentApplications,
+      ])
+      return true
+    } catch (error) {
+      setError(error.message)
+      return false
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+  // PATCH: Update one application and replace it in the current list.
+  async function handleUpdateStatus(applicationId, status) {
+    setUpdatingId(applicationId)
+    setError(null)
+
+    try {
+      const updatedApplication = await updateApplication(applicationId, {
+        status,
+      })
+
+      setApplications((currentApplications) =>
+        currentApplications.map((application) => {
+          if (application.id === updatedApplication.id) {
+            return updatedApplication
+          }
+
+          return application
+        }),
+      )
+    } catch (error) {
+      setError(error.message)
+    } finally {
+      setUpdatingId(null)
+    }
+  }
+  // DELETE: Remove one application from the server and current list.
+  async function handleDeleteApplication(applicationId) {
+    const shouldDelete = window.confirm('Delete this application?')
+
+    if (!shouldDelete) {
+      return
+    }
+    setDeletingId(applicationId)
+    setError(null)
+
+    try {
+      await deleteApplication(applicationId)
+
+      setApplications((currentApplications) =>
+        currentApplications.filter(
+          (application) => application.id !== applicationId,
+        ),
+      )
+    } catch (error) {
+      setError(error.message)
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+    <main className="app-shell">
+      <header className="page-header">
+        <p className="eyebrow">Concourse</p>
+        <h1>Job application tracker</h1>
+        <p>Keep every opportunity and follow-up in one place.</p>
+      </header>
+
+      <section aria-labelledby="applications-heading">
+        <h2 id="applications-heading">Applications</h2>
+
+        <ApplicationForm
+          onCreate={handleCreateApplication}
+          isSubmitting={isSubmitting}
+        />
+
+        {isLoading && <p role="status">Loading applications…</p>}
+        {error && <p role="alert">{error}</p>}
+
+        {!isLoading && !error && applications.length === 0 && (
+          <p>You have no applications to display.</p>
+        )}
+
+        {!isLoading && !error && applications.length > 0 && (
+          <ApplicationList
+            applications={applications}
+            updatingId={updatingId}
+            deletingId={deletingId}
+            onStatusChange={handleUpdateStatus}
+            onDelete={handleDeleteApplication}
+          />
+        )}
       </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    </main>
   )
 }
 
