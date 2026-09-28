@@ -1,0 +1,69 @@
+.app-shell {
+  width: min(100% - 2rem, 1120px);
+  margin-inline: auto;
+  padding-block: 3rem 4rem;
+}
+
+.page-header {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--color-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-header h1 {
+  max-width: 720px;
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 3.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.page-header > p:last-child {
+  max-width: 600px;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+.app-shell > section {
+  padding: 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+}
+
+.app-shell > section h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+}
+
+.app-shell > section p {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    width: min(100% - 1.25rem, 1120px);
+    padding-block: 2rem;
+  }
+
+  .page-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .app-shell > section {
+    padding: 1.25rem;
+  }
+}
