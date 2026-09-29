@@ -53,3 +53,19 @@ Completed on September 29, 2026.
 ```text
 718e1ab feat: complete applications tracker UI
 ```
+
+## Milestone 3 — Platform Foundation
+
+In progress.
+
+### Completed checkpoints
+
+- Supabase production project created
+- PostgreSQL applications baseline applied and versioned
+- Row Level Security enabled for the applications table
+- Cloudflare Worker connected to the GitHub repository
+- Cloudflare static asset and API routing configuration prepared
+
+### Current checkpoint
+
+- Verify the React production build and `/api/health` on Cloudflare
