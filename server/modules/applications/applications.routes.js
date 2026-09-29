@@ -1,20 +1,16 @@
 import { Router } from "express";
-import {
-    listApplications,
-    getApplicationById,
-    createApplication,
-    updateApplication,
-    deleteApplication,
-} from "./applications.controller.js";
+import { createApplicationsController } from "./applications.controller.js";
+import { createApplicationsService } from "./applications.service.js";
+import { mysqlApplicationsRepository } from "./repositories/mysql.repository.js";
 
+const controller = createApplicationsController(
+  createApplicationsService(mysqlApplicationsRepository),
+);
 
 export const applicationsRouter = Router();
 
-applicationsRouter.get("/", listApplications);
-//Get one application using its ID.
-applicationsRouter.get("/:id", getApplicationById);
-applicationsRouter.post("/", createApplication);
-// update only the field provided by the user.
-applicationsRouter.patch("/:id", updateApplication);
-// Delete one application using its URL ID.
-applicationsRouter.delete("/:id", deleteApplication);
+applicationsRouter.get("/", controller.list);
+applicationsRouter.get("/:id", controller.get);
+applicationsRouter.post("/", controller.create);
+applicationsRouter.patch("/:id", controller.update);
+applicationsRouter.delete("/:id", controller.remove);

@@ -1,0 +1,20 @@
+.auth-shell {
+  display: grid;
+  gap: 1rem;
+  max-width: 32rem;
+  margin: 15vh auto;
+  padding: 2rem;
+}
+
+.auth-shell button,
+.session-bar button {
+  width: fit-content;
+}
+
+.session-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem 0;
+}

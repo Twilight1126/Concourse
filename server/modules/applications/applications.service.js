@@ -1,137 +1,115 @@
-import {
-    deleteApplicationById,
-    findAllApplications,
-    findApplicationById,
-    insertApplication,
-    updateApplicationById,
-} from "./applications.repository.js";
-
-// status values accepted by the application API,
 const APPLICATION_STATUSES = new Set([
-    "saved",
-    "applied",
-    "screening",
-    "interviewing",
-    "offered",
-    "rejected",
-    "ghosted",
-    "withdrawn"
+  "saved",
+  "applied",
+  "screening",
+  "interviewing",
+  "offered",
+  "rejected",
+  "ghosted",
+  "withdrawn",
 ]);
-// Reject a status outside the application pipeline.
-function validateApplicationStatus(status) {
-    if (!APPLICATION_STATUSES.has(status)) {
-        const error = new Error("Invalid application status.");
-        error.status = 400;
-        error.code = "INVALID_APPLICATION_STATUS";
-        throw error;
-    }
+
+function validationError(message) {
+  const error = new Error(message);
+  error.status = 400;
+  error.code = "VALIDATION_ERROR";
+  return error;
 }
 
-export function getAllApplications() {
-    return findAllApplications();
+function notFoundError() {
+  const error = new Error("Application not found.");
+  error.status = 404;
+  error.code = "APPLICATION_NOT_FOUND";
+  return error;
 }
 
-export async function createApplication(input = {}) {
-    const application = {
-        company_name: input.company_name?.trim(),
-        job_title: input.job_title?.trim(),
-        job_url: input.job_url?.trim() || null,
-        source: input.source?.trim() || null,
-        status: input.status?.trim() || "saved",
-        applied_at: input.applied_at || null,
-        notes: input.notes?.trim() || null,
-    };
-    if (!application.company_name || !application.job_title) {
-        const error = new Error(
-            "Company name and job title are required."
-        );
-
-        error.status = 400;
-        error.code = "VALIDATION_ERROR";
-
-        throw error;
-    }
-
-    validateApplicationStatus(application.status);
-
-    const applicationId = await insertApplication(application);
-    return await findApplicationById(applicationId);
-}
-// Return one application or clear 404 error
-export async function getApplicationById(id) {
-    const application = await findApplicationById(id);
-
-    if (!application) {
-        const error = new Error("Application not found.");
-        error.status = 404;
-        error.code = "APPLICATION_NOT_FOUND";
-
-        throw error;
-    }
-    return application;
+function requiredText(value, label, maxLength) {
+  if (typeof value !== "string" || !value.trim()) {
+    throw validationError(`${label} is required.`);
+  }
+  const result = value.trim();
+  if (result.length > maxLength) throw validationError(`${label} is too long.`);
+  return result;
 }
 
-export async function updateApplication(id, input = {}) {
-    const existingApplication = await findApplicationById(id);
-    if (!existingApplication) {
-        const error = new Error("Application not found.");
-        error.status = 404;
-        error.code = "APPLICATION_NOT_FOUND";
-
-        throw error;
-    }
-    const application = {
-        company_name:
-            input.company_name === undefined
-                ? existingApplication.company_name
-                : input.company_name?.trim(),
-        job_title:
-            input.job_title === undefined
-                ? existingApplication.job_title
-                : input.job_title?.trim(),
-        job_url:
-            input.job_url === undefined
-                ? existingApplication.job_url
-                : input.job_url?.trim() || null,
-        source:
-            input.source === undefined
-                ? existingApplication.source
-                : input.source?.trim() || null,
-        status:
-            input.status === undefined
-                ? existingApplication.status
-                : input.status?.trim(),
-        applied_at:
-            input.applied_at === undefined
-                ? existingApplication.applied_at
-                : input.applied_at || null,
-        notes:
-            input.notes === undefined
-                ? existingApplication.notes
-                : input.notes?.trim() || null,
-    };
-    if (!application.company_name || !application.job_title) {
-        const error = new Error(
-            "Company name and job title are required."
-        );
-        error.status = 400;
-        error.code = "VALIDATION_ERROR";
-
-        throw error;
-    }
-    validateApplicationStatus(application.status);
-    await updateApplicationById(id, application);
-    return await findApplicationById(id);
+function optionalText(value, label, maxLength) {
+  if (value === null || value === undefined || value === "") return null;
+  if (typeof value !== "string") throw validationError(`${label} must be text.`);
+  const result = value.trim();
+  if (result.length > maxLength) throw validationError(`${label} is too long.`);
+  return result || null;
 }
 
-// Delete one application or return 404 error
-export async function deleteApplication(id) {
-    const deleted = await deleteApplicationById(id);
+function status(value = "saved") {
+  if (typeof value !== "string" || !APPLICATION_STATUSES.has(value)) {
+    throw validationError("Invalid application status.");
+  }
+  return value;
+}
 
-    if (!deleted) {
-        const error = new Error("Application not found.");
-        error.status = 404;
-        error.code = "APPLICATION_NOT_FOUND";
-        throw error;
-    }
+function id(value) {
+  if (!/^\d+$/.test(value) || value === "0") {
+    throw validationError("Invalid application ID.");
+  }
+  return value;
+}
+
+function newApplication(input = {}) {
+  return {
+    company_name: requiredText(input.company_name, "Company name", 150),
+    job_title: requiredText(input.job_title, "Job title", 150),
+    job_url: optionalText(input.job_url, "Job URL", 2048),
+    source: optionalText(input.source, "Source", 100),
+    status: status(input.status),
+    applied_at: input.applied_at || null,
+    notes: optionalText(input.notes, "Notes", 10000),
+  };
+}
+
+function updatedApplication(current, input = {}) {
+  const has = (field) => Object.hasOwn(input, field);
+  return {
+    company_name: has("company_name")
+      ? requiredText(input.company_name, "Company name", 150)
+      : current.company_name,
+    job_title: has("job_title")
+      ? requiredText(input.job_title, "Job title", 150)
+      : current.job_title,
+    job_url: has("job_url")
+      ? optionalText(input.job_url, "Job URL", 2048)
+      : current.job_url,
+    source: has("source")
+      ? optionalText(input.source, "Source", 100)
+      : current.source,
+    status: has("status") ? status(input.status) : current.status,
+    applied_at: has("applied_at") ? input.applied_at || null : current.applied_at,
+    notes: has("notes")
+      ? optionalText(input.notes, "Notes", 10000)
+      : current.notes,
+  };
+}
+
+export function createApplicationsService(repository) {
+  return {
+    list: () => repository.findAll(),
+
+    async get(applicationId) {
+      const application = await repository.findById(id(applicationId));
+      if (!application) throw notFoundError();
+      return application;
+    },
+
+    create: (input) => repository.insert(newApplication(input)),
+
+    async update(applicationId, input) {
+      const normalizedId = id(applicationId);
+      const current = await repository.findById(normalizedId);
+      if (!current) throw notFoundError();
+      return repository.update(normalizedId, updatedApplication(current, input));
+    },
+
+    async remove(applicationId) {
+      if (!(await repository.remove(id(applicationId)))) throw notFoundError();
+    },
+  };
 }

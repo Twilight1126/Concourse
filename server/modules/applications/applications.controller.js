@@ -1,50 +1,26 @@
-import {
-    createApplication as createApplicationService,
-    deleteApplication as deleteApplicationService,
-    getAllApplications,
-    getApplicationById as getApplicationByIdService,
-    updateApplication as updateApplicationService,
+export function createApplicationsController(service) {
+  return {
+    async list(_request, response) {
+      response.status(200).json({ data: await service.list() });
+    },
 
-} from "./applications.service.js";
+    async get(request, response) {
+      response.status(200).json({ data: await service.get(request.params.id) });
+    },
 
-export async function listApplications(_request, response) {
-    const applications = await getAllApplications();
+    async create(request, response) {
+      response.status(201).json({ data: await service.create(request.body) });
+    },
 
-    response.status(200).json({
-        data: applications,
-    });
-}
+    async update(request, response) {
+      response.status(200).json({
+        data: await service.update(request.params.id, request.body),
+      });
+    },
 
-export async function createApplication(request, response) {
-    const application = await createApplicationService(request.body);
-
-    response.status(201).json({
-        data: application,
-    });
-}
-
-export async function updateApplication(request, response) {
-    const application = await updateApplicationService(
-        request.params.id,
-        request.body,
-    );
-
-    response.status(200).json({
-        data: application,
-    });
-}
-  // Return one application using its URL ID.
-export async function getApplicationById(request, response) {
-    const application = await getApplicationByIdService(
-        request.params.id
-    );
-
-    response.status(200).json({
-        data: application,
-    });
-}
-  // Delete one application using its URL ID.
-export async function deleteApplication(request, response) {
-    await deleteApplicationService(request.params.id);
-    response.status(204).send();
+    async remove(request, response) {
+      await service.remove(request.params.id);
+      response.status(204).send();
+    },
+  };
 }
