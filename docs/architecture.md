@@ -1,5 +1,12 @@
 # Concourse Architecture
 
+> **Milestone 3 platform migration:** The production target is React/Vite on
+> Cloudflare Workers with Static Assets, a Cloudflare Worker API under `/api`,
+> and Supabase PostgreSQL, Auth, and Storage. The Express/MySQL descriptions
+> below document the Milestones 1–2 implementation and are being migrated one
+> verified vertical slice at a time. Versioned production schema changes live
+> in `supabase/migrations`.
+
 ## 1. Product goal
 
 Concourse is a job-application and outreach tracker that helps a user capture opportunities, send thoughtful emails, follow up, and keep the pipeline current.
