@@ -1,11 +1,9 @@
 # Concourse Architecture
 
-> **Milestone 3 platform migration:** The production target is React/Vite on
-> Cloudflare Workers with Static Assets, a Cloudflare Worker API under `/api`,
-> and Supabase PostgreSQL, Auth, and Storage. The Express/MySQL descriptions
-> below document the Milestones 1–2 implementation and are being migrated one
-> verified vertical slice at a time. Versioned production schema changes live
-> in `supabase/migrations`.
+> **Environment model:** local development uses React/Vite, Express, and MySQL
+> test data. Production uses the same client behavior and API contract on
+> Cloudflare Workers with Supabase PostgreSQL and Auth. Versioned production
+> schema changes live in `supabase/migrations`.
 
 ## 1. Product goal
 
@@ -14,7 +12,7 @@ Concourse is a job-application and outreach tracker that helps a user capture op
 The system must stay human-controlled:
 
 - The browser extension captures data and opens an editable confirmation form.
-- AI may extract, classify, or draft, but thea user can review every result.
+- AI may extract, classify, or draft, but the user can review every result.
 - Gmail creates real drafts; the user may edit and send them from Gmail.
 - Gmail sync confirms sent mail and replies before the tracker changes.
 - Ambiguous email classifications require user confirmation.
@@ -40,12 +38,12 @@ The MVP does not include microservices, Redis, a message broker, teams, billing,
 
 ## 3. Architecture style
 
-Concourse uses a **modular monolith**:
+Concourse uses a **modular monolith** with environment adapters:
 
 - one React web client;
 - one Chrome extension;
-- one Express REST API;
-- one MySQL database;
+- one API contract implemented by local Express and the production Worker;
+- local MySQL test data and a separate Supabase production database;
 - Gmail and OpenAI as external integrations.
 
 Each feature owns its route, controller, service, repository, validation, and tests. Modules may call another module through its service, but never query another module's tables through its repository.
@@ -55,8 +53,8 @@ flowchart LR
     U[User]
     W[React web app]
     X[Chrome extension]
-    A[Express REST API]
-    D[(MySQL)]
+    A[Express locally / Cloudflare Worker in production]
+    D[(MySQL locally / Supabase in production)]
     G[Google Identity and Gmail API]
     O[OpenAI API]
 
@@ -71,7 +69,7 @@ flowchart LR
 
 ### System rules
 
-- Browser clients never connect directly to MySQL, Gmail, or OpenAI.
+- Browser clients never receive privileged database, Gmail, or OpenAI credentials.
 - Secrets and OAuth refresh tokens remain on the server.
 - Every user-owned query includes the authenticated `user_id`.
 - The server validates all client and extension input.
@@ -264,57 +262,46 @@ An admin may inspect a user's records only for support or safety with an explici
 
 ```text
 server/
-  app.js
-  index.js
-  config/
+  index.js                         Local Express entry point
+  worker.js
   db/
-    connection.js
-    schema.sql
-  middleware/
-  shared/
-    errors/
-    logging/
-    validation/
+    connection.js                  Local MySQL connection
+    schema.sql                     Local MySQL schema
   modules/
-    auth/
-    profile/
     applications/
-    contacts/
-    outreach/
-    followups/
-    gmail/
-    activity/
-    dashboard/
-    extraction/
-    admin/
+      applications.routes.js       Local Express routes
+      applications.controller.js   Local HTTP adapter
+      applications.worker.js       Production Worker HTTP adapter
+      applications.service.js      Shared validation and business rules
+      repositories/
+        mysql.repository.js         Local data adapter
+        supabase.repository.js      Production data adapter
 ```
+
+Add a module only when its feature is implemented. Local and production use the
+same service so their rules and response shapes stay aligned. Each environment
+selects its own HTTP and database adapters.
 
 Request flow:
 
 ```mermaid
 flowchart LR
-    C[Client] --> R[Route]
-    R --> M[Authentication, validation, rate limit]
-    M --> K[Controller]
-    K --> S[Service: business rules]
-    S --> P[Repository: parameterized SQL]
-    P --> D[(MySQL)]
+    C[Client] --> R[Express route or Worker handler]
+    R --> S[Shared service: validation and business rules]
+    S --> P[MySQL or Supabase repository]
+    P --> D[(Local MySQL or production Supabase)]
     S --> I[Integration adapter]
     I --> E[Gmail or OpenAI]
-    M -.error.-> H[Central error handler]
-    K -.error.-> H
-    S -.error.-> H
+    R -.error.-> H[Safe API error response]
 ```
 
-- **Route:** maps method and URL.
-- **Middleware:** authenticates, validates, limits, and attaches request IDs.
-- **Controller:** reads HTTP input and sends HTTP output.
+- **HTTP adapter:** maps method and URL and sends the same response contract.
 - **Service:** owns business rules and cross-module coordination.
-- **Repository:** runs parameterized SQL and maps database rows.
+- **Repository:** isolates MySQL locally and Supabase in production.
 - **Integration adapter:** isolates Gmail and OpenAI SDK/API details.
-- **Error handler:** returns one safe API error shape.
 
-Controllers never contain SQL. Repositories never decide business policy. External API calls are never placed directly in routes.
+Routes never contain database queries. Repositories never decide business
+policy. External integrations stay behind a feature service or adapter.
 
 ## 10. Module ownership
 
@@ -544,7 +531,7 @@ Return `429` with `Retry-After`. Successful read requests should normally finish
 
 Performance rules:
 
-- use a MySQL connection pool;
+- use the Supabase REST API with the authenticated user's JWT;
 - select only needed columns;
 - paginate lists;
 - add indexes for measured query patterns;
@@ -598,7 +585,7 @@ Manual checks remain useful while learning, but repeatable tests are added when 
 
 Build vertical slices so every phase produces something visible:
 
-1. **Foundation complete:** Express health endpoint, MySQL connection, initial applications table.
+1. **Foundation complete:** Cloudflare health endpoint, Supabase project, and initial applications table.
 2. **Applications API:** list, create, read, update, delete, validation, and test data.
 3. **Applications UI:** tracker list, form, stage update, and application detail timeline.
 4. **Google account:** login, session, logout, onboarding, and profile page.

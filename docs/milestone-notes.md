@@ -8,19 +8,15 @@ Completed on September 28, 2026.
 
 ### Completed
 
-- Modular Express API
-- MySQL database integration
+- Modular REST API
+- Relational database integration
 - Application CRUD endpoints
 - Request validation
 - Central error handling
-- Railway API and MySQL deployment
+- Initial hosted API and database deployment
 - Production database schema
 - Public production API
 - Production CRUD verification
-
-### Production API
-
-https://lovely-reverence-production.up.railway.app
 
 ## Milestone 2 — Applications Tracker UI
 
@@ -29,7 +25,7 @@ Completed on September 29, 2026.
 ### Completed
 
 - React applications interface
-- Application list connected to the Express API
+- Application list connected to the REST API
 - Create, read, update, and delete flows
 - Controlled application form
 - Application status updates
@@ -38,7 +34,7 @@ Completed on September 29, 2026.
 - Responsive desktop and mobile layouts
 - Shared frontend API client
 - Frontend and backend environment examples
-- Express CORS allowlist
+- Production origin allowlist
 
 ### Verification
 
@@ -65,7 +61,12 @@ In progress.
 - Row Level Security enabled for the applications table
 - Cloudflare Worker connected to the GitHub repository
 - Cloudflare static asset and API routing configuration prepared
+- Local Express and MySQL development path preserved
+- Production Worker and Supabase adapter prepared
+- Shared Applications validation and API behavior used by both environments
+- Supabase Auth client and protected production API prepared
+- Per-user application ownership migration prepared
 
 ### Current checkpoint
 
-- Verify the React production build and `/api/health` on Cloudflare
+- Apply ownership policies and configure Supabase environment variables
