@@ -1,4 +1,5 @@
 import { handleApplicationsRequest } from "./modules/applications/applications.worker.js";
+import { handleProfileRequest } from "./modules/profile/profile.worker.js";
 
 export default {
   async fetch(request, env) {
@@ -13,6 +14,10 @@ export default {
       pathname.startsWith("/api/applications/")
     ) {
       return handleApplicationsRequest(request, env, pathname);
+    }
+
+    if (pathname === "/api/profile") {
+      return handleProfileRequest(request, env);
     }
 
     if (pathname.startsWith("/api/")) {

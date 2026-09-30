@@ -1,0 +1,20 @@
+.profile-loading {
+  display: grid;
+  width: min(100% - 2rem, 72rem);
+  min-height: 100dvh;
+  align-content: center;
+  gap: 1rem;
+  margin-inline: auto;
+}
+
+.profile-loading div {
+  height: 4rem;
+  background: #e7e4da;
+  border-radius: 0.6rem;
+  animation: profile-pulse 1.4s ease-in-out infinite alternate;
+}
+
+.profile-loading div:first-child { width: 38%; }
+.profile-loading div:last-child { height: 14rem; }
+
+@keyframes profile-pulse { to { opacity: 0.45; } }
