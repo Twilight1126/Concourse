@@ -9,9 +9,21 @@ import {
 import { AuthContext } from "./auth-context";
 import "./AuthGate.css";
 
-const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
+const DEFAULT_IDLE_TIMEOUT_MS = 30 * 60 * 1000;
+const configuredIdleTimeout = Number(import.meta.env.VITE_IDLE_TIMEOUT_MS);
+const IDLE_TIMEOUT_MS =
+  import.meta.env.DEV &&
+  Number.isFinite(configuredIdleTimeout) &&
+  configuredIdleTimeout >= 1_000
+    ? configuredIdleTimeout
+    : DEFAULT_IDLE_TIMEOUT_MS;
 const ACTIVITY_STORAGE_KEY = "concourse:last-activity";
 const ACTIVITY_EVENTS = ["pointerdown", "keydown", "scroll", "touchstart"];
+
+function idleTimeoutMessage() {
+  const minutes = Math.max(1, Math.round(IDLE_TIMEOUT_MS / 60_000));
+  return `You were signed out after ${minutes} minute${minutes === 1 ? "" : "s"} of inactivity.`;
+}
 
 function AuthPage({ error, onSignIn }) {
   return (
@@ -67,17 +79,40 @@ function AuthGate({ children }) {
   const [isLoading, setIsLoading] = useState(isSupabaseConfigured);
   const [error, setError] = useState(null);
   const lastRecordedActivity = useRef(0);
+  const idleSignOutPending = useRef(false);
 
   useEffect(() => {
     if (!supabase) return undefined;
 
     supabase.auth.getSession().then(({ data, error: sessionError }) => {
+      if (
+        data.session &&
+        !window.localStorage.getItem(ACTIVITY_STORAGE_KEY)
+      ) {
+        const now = Date.now();
+        lastRecordedActivity.current = now;
+        window.localStorage.setItem(ACTIVITY_STORAGE_KEY, String(now));
+      }
+
       setSession(data.session);
       setError(sessionError?.message ?? null);
       setIsLoading(false);
     });
 
-    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (
+        event === "SIGNED_IN" &&
+        nextSession &&
+        !window.localStorage.getItem(ACTIVITY_STORAGE_KEY)
+      ) {
+        const now = Date.now();
+        lastRecordedActivity.current = now;
+        window.localStorage.setItem(ACTIVITY_STORAGE_KEY, String(now));
+      } else if (event === "SIGNED_OUT") {
+        lastRecordedActivity.current = 0;
+        window.localStorage.removeItem(ACTIVITY_STORAGE_KEY);
+      }
+
       setSession(nextSession);
       setIsLoading(false);
     });
@@ -103,11 +138,32 @@ function AuthGate({ children }) {
         window.localStorage.getItem(ACTIVITY_STORAGE_KEY),
       );
 
-      if (lastActivity && Date.now() - lastActivity >= IDLE_TIMEOUT_MS) {
-        await supabase.auth.signOut({ scope: "local" });
-        setError("You were signed out after 30 minutes of inactivity.");
-        navigate("/", { replace: true });
+      if (
+        !lastActivity ||
+        Date.now() - lastActivity < IDLE_TIMEOUT_MS ||
+        idleSignOutPending.current
+      ) {
+        return;
       }
+
+      idleSignOutPending.current = true;
+
+      // Remove the expired timestamp before signing out. Otherwise a new
+      // OAuth session is immediately treated as idle and invalidated again.
+      lastRecordedActivity.current = 0;
+      window.localStorage.removeItem(ACTIVITY_STORAGE_KEY);
+      setError(idleTimeoutMessage());
+      navigate("/", { replace: true });
+
+      const { error: signOutError } = await supabase.auth.signOut({
+        scope: "local",
+      });
+
+      if (signOutError && signOutError.code !== "session_not_found") {
+        setError(signOutError.message);
+      }
+
+      idleSignOutPending.current = false;
     }
 
     const storedActivity = Number(
@@ -126,7 +182,10 @@ function AuthGate({ children }) {
     window.addEventListener("focus", checkIdleTime);
     window.addEventListener("storage", checkIdleTime);
     document.addEventListener("visibilitychange", checkIdleTime);
-    const intervalId = window.setInterval(checkIdleTime, 60_000);
+    const intervalId = window.setInterval(
+      checkIdleTime,
+      Math.min(60_000, Math.max(1_000, IDLE_TIMEOUT_MS / 2)),
+    );
 
     return () => {
       ACTIVITY_EVENTS.forEach((eventName) =>
@@ -141,6 +200,8 @@ function AuthGate({ children }) {
 
   async function signIn() {
     setError(null);
+    lastRecordedActivity.current = 0;
+    window.localStorage.removeItem(ACTIVITY_STORAGE_KEY);
 
     const { error: signInError } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -152,6 +213,8 @@ function AuthGate({ children }) {
 
   async function signOut() {
     setError(null);
+    lastRecordedActivity.current = 0;
+    window.localStorage.removeItem(ACTIVITY_STORAGE_KEY);
 
     const { error: signOutError } = await supabase.auth.signOut({
       scope: "local",
@@ -162,7 +225,6 @@ function AuthGate({ children }) {
       return;
     }
 
-    window.localStorage.removeItem(ACTIVITY_STORAGE_KEY);
     navigate("/", { replace: true });
   }
 
