@@ -1,69 +1,180 @@
 .app-shell {
-  width: min(100% - 2rem, 1120px);
-  margin-inline: auto;
-  padding-block: 3rem 4rem;
+  display: flex;
+  min-height: 100%;
+  width: 100%;
+  flex-direction: column;
+  margin: 0;
+  padding: 2.5rem clamp(1.25rem, 3vw, 3rem) 4rem;
 }
 
 .page-header {
-  display: grid;
-  gap: 0.75rem;
-  margin-bottom: 2.5rem;
-}
-
-.eyebrow {
-  margin: 0;
-  color: var(--color-accent);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2.75rem;
 }
 
 .page-header h1 {
-  max-width: 720px;
-  margin: 0;
-  font-size: clamp(2rem, 6vw, 3.75rem);
-  line-height: 1.05;
-  letter-spacing: -0.04em;
+  margin: 0 0 0.45rem;
+  font-size: clamp(1.75rem, 3vw, 2rem);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
 }
 
-.page-header > p:last-child {
-  max-width: 600px;
+.page-header p:last-child {
+  max-width: 40rem;
   margin: 0;
   color: var(--color-text-muted);
-  font-size: 1.125rem;
   line-height: 1.6;
 }
 
-.app-shell > section {
+.application-create-panel,
+.applications-panel,
+.coming-soon-panel {
   padding: 1.5rem;
+  background: #fffefa;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+}
+
+.application-create-panel { margin-bottom: 1.25rem; }
+
+.section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-heading h2 { margin: 0; font-size: 1.15rem; letter-spacing: -0.02em; }
+.section-heading p { margin: 0.35rem 0 0; color: var(--color-text-muted); font-size: 0.82rem; }
+
+.inline-error {
+  padding: 0.85rem 1rem;
+  color: var(--color-danger);
+  background: #fff4f2;
+  border: 1px solid #f0c8c3;
+  border-radius: 0.55rem;
+}
+
+.empty-state {
+  margin: 0;
+  padding: 5rem 1rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  border-top: 1px solid var(--color-border);
+}
+
+.list-skeleton { display: grid; gap: 0.75rem; }
+.list-skeleton span { height: 5rem; background: #efede6; border-radius: 0.55rem; animation: list-pulse 1.2s ease-in-out infinite alternate; }
+@keyframes list-pulse { to { opacity: 0.48; } }
+
+.coming-soon-panel {
+  display: grid;
+  min-height: 24rem;
+  flex: 1;
+  place-content: center;
+  text-align: center;
+}
+
+.coming-soon-panel span { color: var(--color-accent); font-size: 0.75rem; font-weight: 750; letter-spacing: 0.09em; text-transform: uppercase; }
+.coming-soon-panel p { color: var(--color-text-muted); }
+
+.profile-page .profile-form {
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  background: #fffefa;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+}
+
+.profile-overview {
+  overflow: hidden;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 0.75rem;
 }
 
-.app-shell > section h2 {
-  margin: 0 0 0.5rem;
-  font-size: 1.25rem;
+.profile-overview__identity {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  background: #173e36;
+  color: #ffffff;
 }
 
-.app-shell > section p {
+.profile-overview__avatar {
+  display: grid;
+  width: 4.5rem;
+  height: 4.5rem;
+  flex: 0 0 auto;
+  place-items: center;
+  overflow: hidden;
+  color: var(--color-accent);
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+.profile-overview__avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-overview__identity h2 { margin: 0; font-size: 1.5rem; letter-spacing: -0.025em; }
+.profile-overview__identity p { margin: 0.3rem 0 0; color: #c7dcd6; }
+.profile-overview__identity span { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.65rem; color: #a9d8ca; font-size: 0.8rem; }
+
+.profile-overview__section {
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border-top: 1px solid var(--color-border);
+}
+
+.profile-overview__section > header {
+  margin-bottom: 1.75rem;
+}
+.profile-overview__section h2 { margin: 0; font-size: 1.1rem; }
+.profile-overview__section header p { margin: 0.35rem 0 0; color: var(--color-text-muted); font-size: 0.85rem; }
+
+.profile-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem 2rem;
   margin: 0;
-  color: var(--color-text-muted);
-  line-height: 1.6;
 }
 
-@media (max-width: 640px) {
-  .app-shell {
-    width: min(100% - 1.25rem, 1120px);
-    padding-block: 2rem;
-  }
+.profile-details-grid--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.profile-detail { min-width: 0; }
+.profile-detail--wide { grid-column: 1 / -1; }
+.profile-detail dt { margin-bottom: 0.4rem; color: var(--color-text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.055em; }
+.profile-detail dd { margin: 0; overflow-wrap: anywhere; color: var(--color-text); font-size: 0.95rem; font-weight: 600; }
+.profile-detail dd a { color: var(--color-accent); text-underline-offset: 0.2em; }
+.profile-detail dd.is-empty,
+.profile-skills .is-empty { color: #979d9a; font-weight: 400; }
 
-  .page-header {
-    margin-bottom: 1.5rem;
-  }
+.profile-skills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.profile-skills > span:not(.is-empty) { padding: 0.4rem 0.65rem; color: #175848; background: #e4f0eb; border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
 
-  .app-shell > section {
-    padding: 1.25rem;
-  }
+.profile-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  color: #175848;
+  background: #e7f3ee;
+  border: 1px solid #b9dace;
+  border-radius: 0.55rem;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 800px) {
+  .app-shell { padding: 2rem 1rem 3rem; }
+  .page-header { align-items: flex-start; flex-direction: column; margin-bottom: 2rem; }
+  .page-header > .button-primary { width: 100%; }
+  .profile-details-grid,
+  .profile-details-grid--three { grid-template-columns: 1fr; margin-left: 0; }
+  .profile-detail--wide { grid-column: auto; }
+}
+
+@media (max-width: 480px) {
+  .profile-overview__identity { align-items: flex-start; }
+  .profile-overview__avatar { width: 3.5rem; height: 3.5rem; }
 }
