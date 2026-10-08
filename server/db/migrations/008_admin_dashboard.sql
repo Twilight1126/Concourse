@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS admin_memberships (
+  user_id CHAR(36) NOT NULL PRIMARY KEY,
+  granted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS admin_audit_logs (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  admin_user_id CHAR(36) NOT NULL,
+  action VARCHAR(64) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX admin_audit_created_idx (created_at)
+);

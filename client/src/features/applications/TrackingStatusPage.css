@@ -1,0 +1,89 @@
+.tracking-status-page { max-width: 1440px; min-height: 0; height: 100%; gap: 0; overflow: hidden; }
+.tracking-status-header { flex: 0 0 auto; }
+.shell-content.is-fixed .tracking-status-header { margin-bottom: 1rem; }
+.tracking-status-back { flex: 0 0 auto; white-space: nowrap; }
+.tracking-status-back:hover { background: #0b5d48; }
+.tracking-status-scroll { min-height: 0; flex: 1; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: 0 .35rem 1.2rem 0; }
+.tracking-status-panel { min-width: 0; padding: clamp(1rem, 1.6vw, 1.4rem); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: .8rem; }
+.tracking-status-section-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.tracking-status-section-head h2 { margin: 0 0 .2rem; font-size: clamp(1.1rem, 1.7vw, 1.35rem); letter-spacing: -.025em; }
+.tracking-status-section-head p { margin: 0; color: var(--color-text-muted); font-size: .83rem; }
+.tracking-status-badge { align-self: flex-start; flex: 0 0 auto; padding: .45rem .75rem; border: 1px solid currentColor; border-radius: 999px; font-size: .76rem; font-weight: 750; }
+.tracking-status-badge.status-saved { color: #53625b; background: #eef1ed; }
+.tracking-status-badge.status-applied { color: #245585; background: #eaf2fb; }
+.tracking-status-badge.status-screening { color: #075a5a; background: #e6f4f1; }
+.tracking-status-badge.status-interviewing { color: #81540d; background: #fff4df; }
+.tracking-status-badge.status-offered { color: #155724; background: #e8f5e9; }
+.tracking-status-badge.status-rejected, .tracking-status-badge.status-withdrawn { color: #8f2119; background: #fff0ee; }
+.tracking-status-badge.status-ghosted { color: #9b2820; background: #fff0ee; }
+.tracking-status-path { display: grid; grid-template-columns: repeat(var(--stage-count, 5), minmax(0, 1fr)); gap: .6rem; margin: 0; padding: 0; list-style: none; }
+.tracking-status-path__step { display: grid; gap: .4rem; min-width: 0; padding: .7rem; color: #7b837e; background: var(--color-surface-soft); border: 1px solid transparent; border-radius: .6rem; font-size: .76rem; }
+.tracking-status-path__step > span { display: grid; width: 1.7rem; height: 1.7rem; place-items: center; color: inherit; background: var(--color-surface); border-radius: 50%; font-size: .68rem; font-weight: 750; }
+.tracking-status-path__step strong { overflow-wrap: anywhere; }
+.tracking-status-path__step.is-complete { color: #246450; background: var(--color-accent-soft); }
+.tracking-status-path__step.is-current { border-color: currentColor; transform: translateY(-2px); }
+.tracking-status-path__step.is-current.status-saved { color: #53625b; background: #eef1ed; }
+.tracking-status-path__step.is-current.status-applied { color: #245585; background: #eaf2fb; }
+.tracking-status-path__step.is-current.status-screening { color: #075a5a; background: #e6f4f1; }
+.tracking-status-path__step.is-current.status-interviewing { color: #81540d; background: #fff4df; }
+.tracking-status-path__step.is-current.status-offered { color: #155724; background: #e8f5e9; }
+.tracking-status-path__step.is-current.status-rejected, .tracking-status-path__step.is-current.status-ghosted, .tracking-status-path__step.is-current.status-withdrawn { color: #9b2820; background: #fff0ee; }
+.tracking-status-summary { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1.5rem; margin-top: 1rem; padding-top: .8rem; border-top: 1px solid #e8e5da; }
+.tracking-status-summary div { display: grid; gap: .2rem; }
+.tracking-status-summary span { color: var(--color-text-muted); font-size: .72rem; }
+.tracking-status-summary strong { font-size: .9rem; }
+.tracking-status-outcome { display: grid; gap: .3rem; margin-top: 1.2rem; padding: 1rem 1.15rem; border-left: .25rem solid currentColor; border-radius: .4rem; font-size: .84rem; }
+.tracking-status-outcome.status-rejected, .tracking-status-outcome.status-withdrawn { color: #8f2119; background: #fff0ee; }
+.tracking-status-outcome.status-ghosted { color: #9b2820; background: #fff0ee; }
+.tracking-status-workspace { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .85rem; align-items: start; margin-top: .85rem; }
+.tracking-status-side { display: grid; min-width: 0; gap: .85rem; }
+.tracking-status-guide { margin: 0; padding: .8rem 1rem; color: #285746; background: var(--color-accent-soft); border-left: 3px solid var(--color-accent); border-radius: .4rem; font-size: .8rem; line-height: 1.5; }
+.tracking-status-journey { margin-bottom: 0; }
+.tracking-status-count { color: #427361; background: var(--color-accent-soft); padding: .3rem .55rem; border-radius: 99px; font-size: .7rem; font-weight: 700; white-space: nowrap; }
+.tracking-status-empty { padding: 2rem 1rem; color: var(--color-text-muted); background: var(--color-surface-soft); border-radius: .65rem; font-size: .84rem; text-align: center; }
+.tracking-status-updates { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.tracking-status-updates li { display: flex; align-items: flex-start; gap: .85rem; padding: 1rem 0; border-top: 1px solid #e8e5da; }
+.tracking-status-update-dot { width: .75rem; height: .75rem; flex: 0 0 auto; margin-top: .3rem; border-radius: 50%; background: currentColor; }
+.tracking-status-update-body { min-width: 0; flex: 1; }
+.tracking-status-update-head { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; }
+.tracking-status-update-stage { padding: .22rem .48rem; border-radius: .3rem; font-size: .68rem; font-weight: 750; }
+.tracking-status-update-stage.status-applied { color: #245585; background: #eaf2fb; }
+.tracking-status-update-stage.status-screening { color: #075a5a; background: #e6f4f1; }
+.tracking-status-update-stage.status-interviewing { color: #81540d; background: #fff4df; }
+.tracking-status-update-stage.status-offered { color: #155724; background: #e8f5e9; }
+.tracking-status-update-stage.status-rejected, .tracking-status-update-stage.status-withdrawn { color: #8f2119; background: #fff0ee; }
+.tracking-status-update-stage.status-ghosted { color: #9b2820; background: #fff0ee; }
+:root[data-theme="dark"] :is(.tracking-status-badge, .tracking-status-path__step.is-current, .tracking-status-update-stage).status-saved { color: #b8c1c7; background: #30363b; }
+:root[data-theme="dark"] :is(.tracking-status-badge, .tracking-status-path__step.is-current, .tracking-status-update-stage).status-applied { color: #9cc9e8; background: #263640; }
+:root[data-theme="dark"] :is(.tracking-status-badge, .tracking-status-path__step.is-current, .tracking-status-update-stage).status-screening { color: #8ed2cb; background: #263936; }
+:root[data-theme="dark"] :is(.tracking-status-badge, .tracking-status-path__step.is-current, .tracking-status-update-stage).status-interviewing { color: #eac48b; background: #3b3429; }
+:root[data-theme="dark"] :is(.tracking-status-badge, .tracking-status-path__step.is-current, .tracking-status-update-stage).status-offered { color: #9bd4a7; background: #29392e; }
+:root[data-theme="dark"] :is(.tracking-status-badge, .tracking-status-path__step.is-current, .tracking-status-update-stage, .tracking-status-outcome):is(.status-rejected, .status-withdrawn) { color: #efaaa3; background: #3b2c2e; }
+:root[data-theme="dark"] :is(.tracking-status-badge, .tracking-status-path__step.is-current, .tracking-status-update-stage, .tracking-status-outcome).status-ghosted { color: #b8c1c7; background: #30363b; }
+:root[data-theme="dark"] .tracking-status-path__step:not(.is-current):not(.is-complete) { color: var(--color-text-muted); }
+.tracking-status-update-head time { color: var(--color-text-muted); font-size: .73rem; }
+.tracking-status-update-body h3 { margin: .4rem 0 .15rem; font-size: .93rem; }
+.tracking-status-update-body p { margin: .25rem 0 0; color: var(--color-text-muted); font-size: .82rem; line-height: 1.5; white-space: pre-wrap; }
+.tracking-status-update-actions { display: flex; gap: .15rem; }
+.tracking-status-update-actions button { display: grid; width: 2rem; height: 2rem; place-items: center; color: var(--color-text-muted); background: transparent; border: 0; border-radius: .4rem; }
+.tracking-status-update-actions button:hover { color: var(--color-accent); background: var(--color-accent-soft); }
+.tracking-status-update-actions button:last-child:hover { color: var(--color-danger); background: #fff0ee; }
+.tracking-status-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; }
+.tracking-status-field { display: grid; align-content: start; gap: .4rem; font-size: .78rem; font-weight: 700; }
+.tracking-status-field.is-wide { grid-column: 1 / -1; }
+.tracking-status-field small { color: var(--color-text-muted); font-weight: 500; }
+.tracking-status-field input, .tracking-status-field textarea, .tracking-status-field select { width: 100%; min-width: 0; min-height: 2.7rem; padding: .7rem .8rem; color: var(--color-text); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: .55rem; font: inherit; font-weight: 500; }
+.tracking-status-form > .tracking-status-field { margin-bottom: .9rem; }
+.tracking-status-form .tracking-status-fields { padding-top: .15rem; }
+.tracking-status-field textarea { resize: vertical; }
+.tracking-status-field :is(input, textarea, select):focus-visible { outline: 2px solid #7ab7a0; outline-offset: 1px; }
+.tracking-status-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: .65rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid #e8e5da; }
+.tracking-status-actions p { margin: 0 auto 0 0; color: #246450; font-size: .78rem; }
+:root[data-theme="dark"] :is(.tracking-status-summary, .tracking-status-updates li, .tracking-status-actions) { border-color: var(--color-border); }
+:root[data-theme="dark"] .tracking-status-update-actions button:last-child:hover { background: var(--color-danger-soft); }
+:root[data-theme="dark"] .tracking-status-actions p { color: #77d7ae; }
+.tracking-status-form .button-primary:disabled { cursor: not-allowed; opacity: .48; }
+.tracking-status-text-button { justify-self: start; padding: .25rem 0; color: var(--color-accent); background: none; border: 0; font-size: .78rem; font-weight: 700; text-decoration: underline; text-underline-offset: .2rem; }
+@media (max-width: 1050px) { .tracking-status-workspace { grid-template-columns: 1fr; } }
+@media (max-width: 680px) { .tracking-status-header { align-items: flex-start; } .tracking-status-back { width: auto; min-height: 2.2rem; padding: .35rem .55rem; font-size: .72rem; } .tracking-status-section-head { flex-direction: column; } .tracking-status-path { display: flex; overflow-x: auto; padding-bottom: .25rem; } .tracking-status-path__step { flex: 0 0 7.2rem; } .tracking-status-fields { grid-template-columns: 1fr; } .tracking-status-field.is-wide { grid-column: auto; } .tracking-status-actions .button-primary { width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .tracking-status-path__step.is-current { transform: none; } }

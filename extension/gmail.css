@@ -1,0 +1,53 @@
+[data-concourse-panel] {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 2147483646;
+  width: 282px;
+  color: #172033;
+  font: 13px/1.4 Arial, sans-serif;
+  background: #fffefa;
+  border: 1px solid #d8d5cc;
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(23, 32, 51, .16);
+  overflow: hidden;
+}
+
+.concourse-panel__toggle {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  color: #172033;
+  text-align: left;
+  background: #fffefa;
+  border: 0;
+  cursor: pointer;
+}
+
+.concourse-panel__logo { display: block; width: 28px; height: 28px; border-radius: 7px; }
+.concourse-panel__toggle strong { font-size: 13px; }
+.concourse-panel__toggle small { color: #647083; font-size: 11px; }
+.concourse-panel__body { display: grid; gap: 9px; max-height: min(520px, calc(100vh - 90px)); padding: 10px; overflow-y: auto; background: #f7f5ef; border-top: 1px solid #dfdcd3; }
+.concourse-panel__body[hidden] { display: none; }
+.concourse-panel__body label { display: grid; gap: 3px; color: #647083; font-size: 11px; font-weight: 600; }
+.concourse-panel__body input, .concourse-panel__body select { min-height: 34px; padding: 6px 8px; color: #172033; font: 12px Arial, sans-serif; background: white; border: 1px solid #d8d5cc; border-radius: 6px; }
+.concourse-panel__body p { margin: 0; color: #647083; font-size: 10px; line-height: 1.5; }
+.concourse-panel__review { min-height: 36px; color: white; font-weight: 700; background: #0f6e56; border: 0; border-radius: 6px; cursor: pointer; }
+.concourse-panel__body output { min-height: 15px; font-size: 11px; }
+.concourse-panel__body output.is-success { color: #075a46; }
+.concourse-panel__body output.is-error { color: #a72b20; }
+[data-concourse-panel][data-concourse-theme="dark"] { color: #f3f5f5; background: #1d2226; border-color: #394147; box-shadow: 0 12px 32px #0008; color-scheme: dark; }
+[data-concourse-panel][data-concourse-theme="dark"] .concourse-panel__toggle { color: #f3f5f5; background: #1d2226; }
+[data-concourse-panel][data-concourse-theme="dark"] .concourse-panel__logo { filter: brightness(1.4); }
+[data-concourse-panel][data-concourse-theme="dark"] .concourse-panel__toggle small,
+[data-concourse-panel][data-concourse-theme="dark"] .concourse-panel__body label,
+[data-concourse-panel][data-concourse-theme="dark"] .concourse-panel__body p { color: #aeb7bd; }
+[data-concourse-panel][data-concourse-theme="dark"] .concourse-panel__body { background: #171b1e; border-color: #394147; }
+[data-concourse-panel][data-concourse-theme="dark"] .concourse-panel__body input,
+[data-concourse-panel][data-concourse-theme="dark"] .concourse-panel__body select { color: #f3f5f5; background: #30373d; border-color: #4b555c; }
+[data-concourse-panel][data-concourse-theme="dark"] .concourse-panel__review { background: #147b60; }
+[data-concourse-panel][data-concourse-theme="dark"] .concourse-panel__body output.is-success { color: #77d7ae; }
+[data-concourse-panel][data-concourse-theme="dark"] .concourse-panel__body output.is-error { color: #ff9a91; }

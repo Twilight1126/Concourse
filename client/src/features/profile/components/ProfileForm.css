@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: minmax(280px, 0.62fr) minmax(0, 1.38fr);
   min-height: 100dvh;
-  background: #fbfaf6;
+  background: var(--color-surface);
 }
 
 .onboarding-aside {
@@ -16,6 +16,10 @@
   color: #f8f7f2;
   background: #173e36;
 }
+:root[data-theme="dark"] .onboarding-aside { background: #1a2023; border-right: 1px solid var(--color-border); }
+.onboarding-aside { position: relative; }
+.onboarding-theme-toggle { position: absolute; top: 1.25rem; right: 1.25rem; color: #f8f7f2; }
+.onboarding-theme-toggle:hover { color: #fff; background: #ffffff20; border-color: #ffffff30; }
 
 .onboarding-aside h1 {
   max-width: 12ch;
@@ -25,7 +29,7 @@
   letter-spacing: -0.04em;
 }
 
-.onboarding-aside > div:nth-child(2),
+.onboarding-aside > div:not(.brand-mark),
 .onboarding-progress {
   margin-inline: clamp(0.5rem, 2.75vw, 3rem);
 }
@@ -112,7 +116,7 @@
   gap: 0.9rem;
   margin: 0 0 1.5rem;
   padding: 1rem;
-  background: #f1efe8;
+  background: var(--color-background);
   border-radius: 0.65rem;
 }
 
@@ -124,7 +128,7 @@
   place-items: center;
   overflow: hidden;
   color: var(--color-accent);
-  background: #ffffff;
+  background: var(--color-surface-raised);
   border-radius: 50%;
 }
 
@@ -152,8 +156,8 @@
   min-height: 2.85rem;
   padding: 0.75rem;
   color: var(--color-text);
-  background: #ffffff;
-  border: 1px solid #d7d8d3;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
   border-radius: 0.55rem;
   resize: vertical;
   transition: border-color 180ms ease, box-shadow 180ms ease;
@@ -196,7 +200,7 @@
 }
 
 .button-primary { color: #ffffff; background: var(--color-accent); border: 1px solid var(--color-accent); }
-.button-secondary { color: var(--color-text); background: #ffffff; border: 1px solid var(--color-border); }
+.button-secondary { color: var(--color-text); background: var(--color-surface-raised); border: 1px solid var(--color-border); }
 .button-primary:active, .button-secondary:active { transform: scale(0.98); }
 .button-primary:disabled { cursor: not-allowed; opacity: 0.6; }
 

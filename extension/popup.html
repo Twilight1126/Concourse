@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Concourse</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <img class="logo" src="icons/brand-mark.svg" alt="" width="32" height="32" />
+      <div class="brand-copy">
+        <span class="brand-line"><strong>Concourse</strong><i id="connection-dot" class="status-dot" aria-hidden="true"></i></span>
+        <small id="context-label">Your job search workspace</small>
+      </div>
+      <div class="header-actions">
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark mode"><span aria-hidden="true">☾</span><span>Dark mode</span></button>
+        <button id="popup-close" class="popup-close" type="button" aria-label="Close popup" title="Close popup">×</button>
+      </div>
+    </header>
+    <main id="content">
+      <p class="eyebrow">How it works</p>
+      <h1>Save the job. Apply on the site.</h1>
+      <ol class="guide">
+        <li><span>1</span><div><strong>Connect</strong><small>Sign in to your Concourse workspace, then click Connect.</small></div></li>
+        <li><span>2</span><div><strong>Save the job</strong><small>On a job page, check the details and save them to your workspace.</small></div></li>
+        <li><span>3</span><div><strong>Apply on the site</strong><small>Submit on the job site. If Concourse does not detect it, open the C icon and mark it Applied.</small></div></li>
+      </ol>
+      <button id="review-page" class="review-page" type="button">No review card? Open it here</button>
+      <small class="review-hint">Use this on a job or application page if the review card does not appear.</small>
+      <small id="review-page-status" role="status"></small>
+    </main>
+    <footer>
+      <button id="connect" type="button">Connect to Concourse</button>
+      <small id="connection-status" role="status">Checking connection…</small>
+    </footer>
+    <script src="popup.js"></script>
+  </body>
+</html>

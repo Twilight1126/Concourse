@@ -7,5 +7,12 @@
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"]
-  }
+  },
+  "analytics_engine_datasets": [
+    { "binding": "API_METRICS", "dataset": "concourse_api_metrics" }
+  ],
+  "ratelimits": [
+    { "name": "API_RATE_LIMIT", "namespace_id": "2609291", "simple": { "limit": 180, "period": 60 } }
+  ],
+  "analytics": { "binding": "ANALYTICS_SQL" }
 }

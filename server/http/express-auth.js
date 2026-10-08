@@ -1,4 +1,4 @@
-import { getSupabaseUser } from "../integrations/supabase/auth.js";
+import { getCurrentSupabaseUser, getSupabaseUser } from "../integrations/supabase/auth.js";
 
 export async function requireIdentity(request, _response, next) {
   try {
@@ -12,6 +12,15 @@ export async function requireIdentity(request, _response, next) {
     }
 
     request.identity = await getSupabaseUser(process.env, token);
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function requireCurrentIdentity(request, _response, next) {
+  try {
+    request.identity = await getCurrentSupabaseUser(process.env, request.headers.authorization.split(" ")[1]);
     next();
   } catch (error) {
     next(error);

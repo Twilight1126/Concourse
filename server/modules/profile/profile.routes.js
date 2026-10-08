@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireIdentity } from "../../http/express-auth.js";
+import { requireCurrentIdentity, requireIdentity } from "../../http/express-auth.js";
 import { createProfileController } from "./profile.controller.js";
 import { createProfileService } from "./profile.service.js";
 import { mysqlProfileRepository } from "./repositories/mysql.repository.js";
@@ -12,4 +12,4 @@ export const profileRouter = Router();
 
 profileRouter.use(requireIdentity);
 profileRouter.get("/", controller.get);
-profileRouter.put("/", controller.save);
+profileRouter.put("/", requireCurrentIdentity, controller.save);

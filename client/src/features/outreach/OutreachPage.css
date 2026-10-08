@@ -1,0 +1,6 @@
+.outreach-page { min-height: 100%; }
+.outreach-coming-soon { display: grid; flex: 1; min-height: 28rem; place-items: center; text-align: center; }
+.outreach-coming-soon__content { max-width: 32rem; padding: 2rem 1rem; }
+.outreach-coming-soon__mark { display: grid; width: 4rem; height: 4rem; margin: 0 auto 1.5rem; place-items: center; color: var(--color-accent); background: var(--color-accent-soft); border-radius: 1rem; }
+.outreach-coming-soon h2 { margin: 0; color: var(--color-text); font-size: clamp(1.5rem, 3vw, 2rem); letter-spacing: -.03em; line-height: 1.2; }
+.outreach-coming-soon p { margin: .75rem 0 0; color: var(--color-text-muted); line-height: 1.5; }

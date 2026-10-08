@@ -3,7 +3,7 @@ import {
   readJson,
   workerErrorResponse,
 } from "../../http/worker.js";
-import { getSupabaseUser } from "../../integrations/supabase/auth.js";
+import { getCurrentSupabaseUser, getSupabaseUser } from "../../integrations/supabase/auth.js";
 import { createProfileService } from "./profile.service.js";
 import { createSupabaseProfileRepository } from "./repositories/supabase.repository.js";
 
@@ -18,7 +18,7 @@ export async function handleProfileRequest(request, env) {
   }
 
   try {
-    const identity = await getSupabaseUser(env, token);
+    const identity = request.method === "PUT" ? await getCurrentSupabaseUser(env, token) : await getSupabaseUser(env, token);
     const service = createProfileService(
       createSupabaseProfileRepository(env, token),
     );

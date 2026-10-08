@@ -1,0 +1,45 @@
+#concourse-job-capture { all: initial; position: fixed; right: 12px; bottom: 12px; z-index: 2147483646; display: flex; flex-direction: column; width: min(350px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow: hidden; color: #172033; font: 13px/1.4 Arial, sans-serif; background: #fffefa; border: 1px solid #d8d5cc; border-radius: 11px; box-shadow: 0 16px 44px rgba(23,32,51,.2); color-scheme: light; }
+#concourse-job-capture, #concourse-job-capture * { box-sizing: border-box; }
+#concourse-job-capture .concourse-job-card__toggle { display: grid; width: 100%; grid-template-columns: 30px minmax(0, 1fr) auto auto; align-items: center; gap: 9px; margin: 0; padding: 9px 11px; color: #172033; font: inherit; text-align: left; text-transform: none; background: #fffefa; border: 0; border-radius: 0; cursor: grab; touch-action: none; user-select: none; }
+#concourse-job-capture .concourse-job-card__toggle.is-dragging { cursor: grabbing; }
+#concourse-job-capture .concourse-job-card__logo { display: block; width: 30px; height: 30px; border-radius: 7px; }
+#concourse-job-capture .concourse-job-card__toggle div { display: grid; min-width: 0; }
+#concourse-job-capture .concourse-job-card__toggle strong { font-size: 13px; }
+#concourse-job-capture .concourse-job-card__toggle small { overflow: hidden; color: #647083; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+#concourse-job-capture .concourse-job-card__move { color: #647083; font-size: 11px; font-weight: 600; }
+#concourse-job-capture .concourse-job-card__toggle b { color: #647083; transition: transform .16s ease; }
+#concourse-job-capture.is-expanded .concourse-job-card__toggle b { transform: rotate(180deg); }
+#concourse-job-capture.is-captured:not(.is-expanded) { width: 48px; border-radius: 10px; }
+#concourse-job-capture.is-captured:not(.is-expanded) .concourse-job-card__toggle { grid-template-columns: 30px; padding: 8px; }
+#concourse-job-capture.is-captured:not(.is-expanded) .concourse-job-card__toggle div,
+#concourse-job-capture.is-captured:not(.is-expanded) .concourse-job-card__move,
+#concourse-job-capture.is-captured:not(.is-expanded) .concourse-job-card__toggle b { display: none; }
+#concourse-job-capture .concourse-job-card__body { display: grid; gap: 8px; min-height: 0; margin: 0; padding: 11px; overflow-y: auto; background: #f7f5ef; border-top: 1px solid #dfdcd3; }
+#concourse-job-capture .concourse-job-card__body[hidden] { display: none; }
+#concourse-job-capture .concourse-job-card__body p { margin: 0 0 2px; color: #647083; font-size: 11px; }
+#concourse-job-capture .concourse-job-card__fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+#concourse-job-capture .concourse-job-card__body label { display: grid; gap: 3px; color: #647083; font-size: 11px; font-weight: 600; }
+#concourse-job-capture .concourse-job-card__body input { width: 100%; min-width: 0; min-height: 34px; margin: 0; padding: 6px 8px; color: #172033; font: 12px/1.4 Arial, sans-serif; background: white; border: 1px solid #d8d5cc; border-radius: 6px; }
+#concourse-job-capture .concourse-job-card__actions { display: grid; margin-top: 3px; }
+#concourse-job-capture .concourse-job-card__actions button { min-height: 36px; margin: 0; padding: 6px 10px; font: 700 13px/1.4 Arial, sans-serif; text-transform: none; border-radius: 6px; cursor: pointer; }
+#concourse-job-capture .concourse-job-card__save { color: white; background: #0f6e56; border: 1px solid #0f6e56; }
+#concourse-job-capture .concourse-job-card__save:disabled { cursor: wait; opacity: .72; }
+#concourse-job-capture .concourse-job-card__body output { min-height: 16px; font-size: 11px; }
+#concourse-job-capture .concourse-job-card__body output.is-success { color: #075a46; }
+#concourse-job-capture .concourse-job-card__body output.is-error { color: #a72b20; }
+#concourse-job-capture[data-concourse-theme="dark"] { color: #f3f5f5; background: #1d2226; border-color: #394147; box-shadow: 0 16px 44px #0008; color-scheme: dark; }
+#concourse-job-capture[data-concourse-theme="dark"] .concourse-job-card__toggle { color: #f3f5f5; background: #1d2226; }
+#concourse-job-capture[data-concourse-theme="dark"] .concourse-job-card__logo { filter: brightness(1.4); }
+#concourse-job-capture[data-concourse-theme="dark"] .concourse-job-card__toggle small,
+#concourse-job-capture[data-concourse-theme="dark"] .concourse-job-card__move,
+#concourse-job-capture[data-concourse-theme="dark"] .concourse-job-card__toggle b,
+#concourse-job-capture[data-concourse-theme="dark"] .concourse-job-card__body p,
+#concourse-job-capture[data-concourse-theme="dark"] .concourse-job-card__body label { color: #aeb7bd; }
+#concourse-job-capture[data-concourse-theme="dark"] .concourse-job-card__body { background: #171b1e; border-color: #394147; }
+#concourse-job-capture[data-concourse-theme="dark"] .concourse-job-card__body input { color: #f3f5f5; background: #30373d; border-color: #4b555c; }
+#concourse-job-capture[data-concourse-theme="dark"] .concourse-job-card__save { background: #147b60; border-color: #147b60; }
+#concourse-job-capture[data-concourse-theme="dark"] .concourse-job-card__body output.is-success { color: #77d7ae; }
+#concourse-job-capture[data-concourse-theme="dark"] .concourse-job-card__body output.is-error { color: #ff9a91; }
+@media (max-width: 420px) {
+  #concourse-job-capture .concourse-job-card__fields { grid-template-columns: minmax(0, 1fr); }
+}
