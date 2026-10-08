@@ -4,6 +4,15 @@ export function getApplications() {
     return apiRequest('/applications')
 }
 
+export function getApplicationPage({ page, search, status, source }) {
+    const params = new URLSearchParams({ page: String(page), search, status, source })
+    return apiRequest(`/applications/page?${params}`)
+}
+
+export function getApplication(id) {
+    return apiRequest(`/applications/${encodeURIComponent(id)}`)
+}
+
 export function createApplication(application) {
     return apiRequest('/applications', {
         method: 'POST',
@@ -23,3 +32,8 @@ export function deleteApplication(id) {
         method: 'DELETE',
     })
 }
+
+export const getApplicationUpdates = (id) => apiRequest(`/applications/${encodeURIComponent(id)}/updates`);
+export const createApplicationUpdate = (id, values) => apiRequest(`/applications/${encodeURIComponent(id)}/updates`, { method: "POST", body: JSON.stringify(values) });
+export const editApplicationUpdate = (id, updateId, values) => apiRequest(`/applications/${encodeURIComponent(id)}/updates/${encodeURIComponent(updateId)}`, { method: "PATCH", body: JSON.stringify(values) });
+export const deleteApplicationUpdate = (id, updateId) => apiRequest(`/applications/${encodeURIComponent(id)}/updates/${encodeURIComponent(updateId)}`, { method: "DELETE" });

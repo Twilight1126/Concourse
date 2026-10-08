@@ -1,0 +1,39 @@
+.source-breakdown { min-width: 0; }
+.source-breakdown__list { display: grid; gap: .85rem; max-height: 14rem; overflow-y: auto; padding-right: .35rem; }
+.source-breakdown__row { display: grid; gap: .4rem; min-width: 0; }
+.source-breakdown__label { display: flex; justify-content: space-between; align-items: baseline; gap: .75rem; font-size: .875rem; }
+.source-breakdown__label strong { min-width: 0; overflow: hidden; color: var(--color-text); text-overflow: ellipsis; white-space: nowrap; }
+.source-breakdown__label span { flex: 0 0 auto; color: #526276; font-weight: 650; }
+.source-breakdown__track { height: .42rem; overflow: hidden; background: var(--color-surface-soft); border-radius: 99px; }
+.source-breakdown__track span { display: block; height: 100%; border-radius: inherit; }
+.source-breakdown__empty { margin: 1.2rem 0 .2rem; color: var(--color-text-muted); font-size: .82rem; }
+
+.source-breakdown--comparison { container-type: inline-size; }
+.source-breakdown__comparison { display: grid; grid-template-columns: minmax(10rem, .72fr) minmax(0, 1.28fr); align-items: center; gap: 1.4rem; min-width: 0; }
+.source-breakdown__visual { display: grid; justify-items: center; gap: .8rem; min-width: 0; }
+.source-breakdown__donut { position: relative; display: grid; width: min(100%, 11.5rem); aspect-ratio: 1; place-items: center; }
+.source-breakdown__donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.source-breakdown__ring-base, .source-breakdown__segment { fill: none; stroke-width: 18; }
+.source-breakdown__ring-base { stroke: var(--color-surface-soft); }
+.source-breakdown__segment { cursor: default; transition: opacity .18s ease, stroke-width .18s ease; }
+.source-breakdown__segment.is-muted { opacity: .38; }
+.source-breakdown__segment:hover { stroke-width: 21; }
+.source-breakdown__donut-center { position: absolute; display: grid; width: 67%; aspect-ratio: 1; align-content: center; justify-items: center; padding: .4rem; text-align: center; background: var(--color-surface); border-radius: 50%; pointer-events: none; }
+.source-breakdown__donut-center strong { color: var(--color-text); font-size: clamp(1.55rem, 2vw, 2rem); letter-spacing: -.045em; line-height: 1; }
+.source-breakdown__donut-center span { margin-top: .35rem; color: var(--color-text-muted); font-size: .75rem; line-height: 1.2; }
+.source-breakdown__visual p { margin: 0; color: var(--color-text-muted); font-size: .75rem; }
+.source-breakdown__visual p strong { color: var(--color-text); font-weight: 700; }
+.source-breakdown__distribution { min-width: 0; }
+.source-breakdown__column-head { display: flex; justify-content: space-between; gap: .5rem; padding-bottom: .7rem; color: var(--color-text-muted); border-bottom: 1px solid var(--color-border); font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.source-breakdown--comparison .source-breakdown__list { gap: .75rem; max-height: 12.75rem; padding-top: .8rem; }
+.source-breakdown__swatch { display: inline-block; width: .58rem; height: .58rem; margin-right: .45rem; border-radius: 50%; vertical-align: middle; }
+.source-breakdown--comparison .source-breakdown__row { padding: .35rem .45rem; margin: -.35rem -.45rem; border-radius: .4rem; transition: background-color .18s ease; }
+.source-breakdown--comparison .source-breakdown__row:hover, .source-breakdown--comparison .source-breakdown__row.is-active, .source-breakdown--comparison .source-breakdown__row:focus-visible { background: var(--color-accent-soft); outline-color: #0f6e56; }
+.source-breakdown--comparison .source-breakdown__row:hover .source-breakdown__track span, .source-breakdown--comparison .source-breakdown__row.is-active .source-breakdown__track span { filter: brightness(.85); }
+.source-breakdown__note { margin: 1rem 0 0; padding-top: .8rem; color: var(--color-text-muted); border-top: 1px solid var(--color-border); font-size: .8rem; line-height: 1.4; }
+
+@container (max-width: 620px) {
+  .source-breakdown__comparison { grid-template-columns: 1fr; gap: 1.15rem; }
+  .source-breakdown__donut { width: min(100%, 10rem); }
+}
+@media (max-width: 420px) { .source-breakdown__label { align-items: flex-start; flex-direction: column; gap: .15rem; } .source-breakdown__label span { flex: auto; } }

@@ -1,5 +1,8 @@
 import { cloneElement, useState } from "react";
 import { ArrowRight, CheckCircle, UserCircle } from "@phosphor-icons/react";
+import { useSessionDraft } from "../../../lib/use-session-draft";
+import BrandMark from "../../../components/BrandMark";
+import { ThemeToggle } from "../../../components/Theme";
 import "./ProfileForm.css";
 
 function detectedTimezone() {
@@ -112,7 +115,7 @@ function Field({ children, error, hint, label, required = false, wide = false })
 }
 
 function ProfileForm({ error, identity, isSaving, mode = "profile", onCancel, onErrorDismiss, onSave, profile }) {
-  const [values, setValues] = useState(() => initialValues(profile, identity));
+  const [values, setValues, clearDraft] = useSessionDraft(`concourse:draft:profile:${identity.id}`, initialValues(profile, identity));
   const [fieldErrors, setFieldErrors] = useState({});
   const [failedAvatar, setFailedAvatar] = useState(null);
   const email = profile?.email ?? identity?.email ?? "";
@@ -139,7 +142,7 @@ function ProfileForm({ error, identity, isSaving, mode = "profile", onCancel, on
       return;
     }
 
-    await onSave(values);
+    if (await onSave(values)) clearDraft();
   }
 
   const form = (
@@ -244,7 +247,7 @@ function ProfileForm({ error, identity, isSaving, mode = "profile", onCancel, on
       {error && <p className="inline-error profile-save-error" role="alert">{error}</p>}
 
       <div className="profile-actions">
-        {onCancel && <button type="button" className="button-secondary" onClick={onCancel}>Cancel</button>}
+        {onCancel && <button type="button" className="button-secondary" onClick={() => { clearDraft(); onCancel(); }}>Cancel</button>}
         <button type="submit" className="button-primary" disabled={isSaving}>
           {isSaving ? "Saving changes…" : mode === "onboarding" ? "Finish setup" : "Save changes"}
           {!isSaving && <ArrowRight size={18} weight="bold" aria-hidden="true" />}
@@ -258,10 +261,10 @@ function ProfileForm({ error, identity, isSaving, mode = "profile", onCancel, on
   return (
     <main className="onboarding-page">
       <aside className="onboarding-aside">
-        <div className="brand-mark"><span className="brand-mark__icon">C</span><span>Concourse</span></div>
+        <BrandMark className="brand-mark" /><ThemeToggle className="onboarding-theme-toggle" />
         <div>
           <h1>Set up your profile</h1>
-          <p>Add the details Concourse uses to organize applications and outreach.</p>
+          <p>Add the details Concourse uses to organize your applications.</p>
         </div>
         <ol className="onboarding-progress">
           <li className="is-complete"><span>1</span>Google account</li>

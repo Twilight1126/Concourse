@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name": "Concourse Capture",
+  "version": "0.7.8",
+  "description": "Capture job applications and outreach metadata into Concourse.",
+  "permissions": ["activeTab", "identity", "scripting", "storage"],
+  "host_permissions": [
+    "http://localhost:8787/*",
+    "http://127.0.0.1:8787/*",
+    "http://localhost:4000/*",
+    "http://127.0.0.1:4000/*",
+    "https://*.supabase.co/*",
+    "https://concourse.chiragb0707.workers.dev/*"
+  ],
+  "action": {
+    "default_title": "Capture with Concourse",
+    "default_popup": "popup.html",
+    "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" }
+  },
+  "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+  "web_accessible_resources": [{ "resources": ["icons/brand-mark.svg"], "matches": ["http://*/*", "https://*/*"] }],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "exclude_matches": [
+        "https://mail.google.com/*",
+        "http://localhost:8787/*",
+        "http://127.0.0.1:8787/*",
+        "https://concourse.chiragb0707.workers.dev/*"
+      ],
+      "js": ["page-capture.js", "job-capture.js"],
+      "css": ["job-capture.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["gmail.js"],
+      "css": ["gmail.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "http://localhost:8787/*",
+        "http://127.0.0.1:8787/*",
+        "https://concourse.chiragb0707.workers.dev/*"
+      ],
+      "js": ["workspace-bridge.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

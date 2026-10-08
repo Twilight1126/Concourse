@@ -5,11 +5,15 @@ import {
   PaperPlaneTilt,
   SidebarSimple,
   SignOut,
+  ShieldCheck,
 } from "@phosphor-icons/react";
-import { useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../features/auth/auth-context";
 import { useProfile } from "../features/profile/profile-context";
+import { getAdminAccess } from "../api/admin";
+import BrandMark from "../components/BrandMark";
+import { ThemeToggle } from "../components/Theme";
 import "./AppShell.css";
 
 const navigation = [
@@ -20,24 +24,21 @@ const navigation = [
 ];
 
 function Logo({ compact = false }) {
-  return (
-    <div className={`shell-logo${compact ? " is-compact" : ""}`}>
-      <span>C</span>
-      <strong>Concourse</strong>
-    </div>
-  );
+  return <BrandMark className={`shell-logo${compact ? " is-compact" : ""}`} showName={!compact} />;
 }
 
-function Navigation({ compact = false, mobile = false }) {
+function Navigation({ compact = false, mobile = false, isAdmin = false }) {
+  const { pathname } = useLocation();
+  const items = isAdmin ? [...navigation, { label: "Admin", path: "/admin", icon: ShieldCheck }] : navigation;
   return (
-    <nav className={mobile ? "mobile-navigation" : "shell-navigation"}>
-      {navigation.map(({ icon: Icon, label, path }) => (
+    <nav className={mobile ? `mobile-navigation${isAdmin ? " has-admin" : ""}` : "shell-navigation"}>
+      {items.map(({ icon: Icon, label, path }) => (
         <NavLink
           key={path}
           to={path}
           aria-label={compact ? label : undefined}
           title={compact ? label : undefined}
-          className={({ isActive }) => isActive ? "is-active" : undefined}
+          className={({ isActive }) => isActive || path === "/applications" && ["/interview-status", "/tracking-status"].includes(pathname) ? "is-active" : undefined}
         >
           <Icon size={mobile ? 22 : 19} weight="duotone" aria-hidden="true" />
           <span>{label}</span>
@@ -65,9 +66,24 @@ function ProfileAvatar({ profile }) {
 
 function AppShell() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { session, signOut } = useAuth();
   const { profile } = useProfile();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const contentRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+    getAdminAccess()
+      .then((result) => { if (active) setIsAdmin(Boolean(result.is_admin)); })
+      .catch(() => { if (active) setIsAdmin(false); });
+    return () => { active = false; };
+  }, [session?.user?.id]);
+
+  useEffect(() => {
+    contentRef.current?.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <div className={`app-layout${isSidebarCollapsed ? " is-sidebar-collapsed" : ""}`}>
@@ -85,12 +101,14 @@ function AppShell() {
           </button>
         </header>
 
-        <Navigation compact={isSidebarCollapsed} />
+        <Navigation compact={isSidebarCollapsed} isAdmin={isAdmin} />
+
+        <ThemeToggle className={isSidebarCollapsed ? "is-compact" : ""} />
 
         <footer className="shell-user">
-          <ProfileAvatar profile={profile} />
+          {isAdmin ? <span className="shell-user__admin-mark"><ShieldCheck size={21} weight="duotone" aria-hidden="true" /></span> : <ProfileAvatar profile={profile} />}
           <div>
-            <strong>{profile.display_name}</strong>
+            <strong>{isAdmin ? "Admin" : profile.display_name}</strong>
             <small>{session?.user?.email}</small>
           </div>
           <button type="button" onClick={signOut} aria-label="Sign out">
@@ -101,16 +119,17 @@ function AppShell() {
 
       <header className="mobile-header">
         <Logo />
+        <ThemeToggle className="is-compact" />
         <button type="button" onClick={() => navigate("/profile")} aria-label="Open profile settings">
           <ProfileAvatar profile={profile} />
         </button>
       </header>
 
-      <main className="shell-content">
+      <main ref={contentRef} className={`shell-content${location.pathname.startsWith("/applications") || ["/profile", "/interview-status", "/tracking-status", "/admin-view-all-users"].includes(location.pathname) ? " is-fixed" : ""}`}>
         <Outlet />
       </main>
 
-      <Navigation mobile />
+      <Navigation mobile isAdmin={isAdmin} />
     </div>
   );
 }

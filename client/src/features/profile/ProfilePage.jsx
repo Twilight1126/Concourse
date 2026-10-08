@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useAuth } from "../auth/auth-context";
 import { useProfile } from "./profile-context";
 import ProfileForm from "./components/ProfileForm";
+import { useActionFeedback } from "../../components/action-feedback-context";
 
 function ProfileValue({ label, link = false, value, wide = false }) {
   return (
@@ -88,14 +89,13 @@ function ProfileOverview({ email, profile }) {
 }
 
 function ProfilePage() {
+  const { notify } = useActionFeedback();
   const { session } = useAuth();
   const { profile, error, isSaving, save, clearError } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
-  const [notice, setNotice] = useState(null);
 
   function beginEditing() {
     clearError();
-    setNotice(null);
     setIsEditing(true);
   }
 
@@ -109,7 +109,9 @@ function ProfilePage() {
 
     if (savedProfile) {
       setIsEditing(false);
-      setNotice("Profile changes saved.");
+      notify("Profile changes saved", "updated");
+    } else {
+      notify("Could not save profile changes.", "error");
     }
 
     return savedProfile;
@@ -120,7 +122,7 @@ function ProfilePage() {
       <header className="page-header">
         <div>
           <h1>{isEditing ? "Edit profile" : "Settings"}</h1>
-          <p>{isEditing ? "Update the details Concourse uses across applications and outreach." : "Review the professional context Concourse uses across your workspace."}</p>
+          <p>{isEditing ? "Update the details Concourse uses for your applications." : "Review the professional details Concourse uses for your applications."}</p>
         </div>
         {!isEditing && (
           <button className="button-primary" type="button" onClick={beginEditing}>
@@ -129,8 +131,6 @@ function ProfilePage() {
           </button>
         )}
       </header>
-
-      {notice && !isEditing && <p className="profile-notice" role="status"><CheckCircle size={18} weight="fill" aria-hidden="true" />{notice}</p>}
 
       {isEditing ? (
         <ProfileForm identity={session?.user} error={error} isSaving={isSaving} mode="profile" onCancel={cancelEditing} onErrorDismiss={clearError} onSave={saveChanges} profile={profile} />

@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { getProfile, saveProfile } from "../../api/profile";
+import LoadingSkeleton from "../../components/LoadingSkeleton";
 import { useAuth } from "../auth/auth-context";
 import ProfileForm from "./components/ProfileForm";
+import { useActionFeedback } from "../../components/action-feedback-context";
 import { ProfileContext } from "./profile-context";
-import "./ProfileGate.css";
 
 function ProfileGate({ children }) {
+  const { notify } = useActionFeedback();
   const { session } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -15,21 +17,25 @@ function ProfileGate({ children }) {
   const [isSaving, setIsSaving] = useState(false);
   const [loadError, setLoadError] = useState(null);
   const [saveError, setSaveError] = useState(null);
+  const [retryVersion, setRetryVersion] = useState(0);
 
   useEffect(() => {
+    let active = true;
     async function loadProfile() {
       try {
         setLoadError(null);
-        setProfile(await getProfile());
+        const nextProfile = await getProfile();
+        if (active) setProfile(nextProfile);
       } catch (loadError) {
-        setLoadError(loadError.message);
+        if (active) setLoadError(loadError.message);
       } finally {
-        setHasLoaded(true);
+        if (active) setHasLoaded(true);
       }
     }
 
-    loadProfile();
-  }, [session?.user?.id]);
+    void loadProfile();
+    return () => { active = false; };
+  }, [session?.user?.id, retryVersion]);
 
   async function handleSave(values) {
     setIsSaving(true);
@@ -51,17 +57,11 @@ function ProfileGate({ children }) {
   }
 
   if (!hasLoaded) {
-    return (
-      <main className="profile-loading" aria-label="Loading your workspace">
-        <div />
-        <div />
-        <div />
-      </main>
-    );
+    return <LoadingSkeleton type="profile" label="Loading your workspace" />;
   }
 
   if (loadError) {
-    return <p className="page-status" role="alert">{loadError}</p>;
+    return <main className="page-status" role="alert">{loadError} <button type="button" onClick={() => { setHasLoaded(false); setLoadError(null); setRetryVersion((version) => version + 1); }}>Try again</button></main>;
   }
 
   if (!profile && location.pathname !== "/onboarding") {
@@ -78,7 +78,9 @@ function ProfileGate({ children }) {
         onErrorDismiss={() => setSaveError(null)}
         onSave={async (values) => {
           const saved = await handleSave(values);
-          if (saved) navigate("/dashboard", { replace: true });
+          if (saved) { notify("Profile ready"); navigate("/dashboard", { replace: true }); }
+          else notify("Could not save profile. Please try again.", "error");
+          return saved;
         }}
       />
     );
