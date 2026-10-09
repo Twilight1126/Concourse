@@ -66,8 +66,8 @@ function validateProfile(values) {
 
   const numberRules = [
     ["years_of_experience", "Years of experience", 0, 80],
-    ["current_ctc", "Current CTC", 0, MAX_CTC],
-    ["expected_ctc", "Expected CTC", 0, MAX_CTC],
+    ["current_ctc", "Current annual pay", 0, MAX_CTC],
+    ["expected_ctc", "Expected annual pay", 0, MAX_CTC],
     ["notice_period_days", "Notice period", 0, 730],
   ];
 
@@ -171,13 +171,13 @@ function ProfileForm({ error, identity, isSaving, mode = "profile", onCancel, on
 
         <div className="profile-grid">
           <Field error={fieldErrors.display_name} label="Display name" required>
-            <input name="display_name" value={values.display_name} onChange={handleChange} maxLength="100" required />
+            <input name="display_name" value={values.display_name} onChange={handleChange} maxLength="100" placeholder="Enter your full name" autoComplete="name" required />
           </Field>
           <Field error={fieldErrors.phone} label="Phone">
             <input name="phone" type="tel" value={values.phone} onChange={handleChange} maxLength="30" placeholder="Your preferred contact number" />
           </Field>
           <Field label="Location">
-            <input name="location" value={values.location} onChange={handleChange} maxLength="150" placeholder="Bengaluru, India" />
+            <input name="location" value={values.location} onChange={handleChange} maxLength="150" placeholder="City, region, or country" />
           </Field>
         </div>
       </section>
@@ -186,25 +186,25 @@ function ProfileForm({ error, identity, isSaving, mode = "profile", onCancel, on
         <div className="profile-section__heading">
           <div>
             <h2>Professional direction</h2>
-            <p>Used to organize applications and extension captures.</p>
+            <p>Tell us about your experience and the roles you want.</p>
           </div>
         </div>
 
         <div className="profile-grid">
-          <Field label="Present company">
-            <input name="present_company" value={values.present_company} onChange={handleChange} maxLength="150" placeholder="Current employer" />
+          <Field label="Current organization">
+            <input name="present_company" value={values.present_company} onChange={handleChange} maxLength="150" placeholder="Organization name" />
           </Field>
           <Field label="Current job title">
-            <input name="current_job_title" value={values.current_job_title} onChange={handleChange} maxLength="150" placeholder="Software Engineer" />
+            <input name="current_job_title" value={values.current_job_title} onChange={handleChange} maxLength="150" placeholder="Current role" />
           </Field>
           <Field error={fieldErrors.years_of_experience} label="Years of experience">
-            <input name="years_of_experience" type="number" min="0" max="80" step="0.5" value={values.years_of_experience} onChange={handleChange} placeholder="4.5" />
+            <input name="years_of_experience" type="number" min="0" max="80" step="0.5" value={values.years_of_experience} onChange={handleChange} />
           </Field>
           <Field error={fieldErrors.preferred_roles} label="Preferred roles" required>
-            <input name="preferred_roles" value={values.preferred_roles} onChange={handleChange} maxLength="500" placeholder="Full Stack Developer, Software Engineer" required />
+            <input name="preferred_roles" value={values.preferred_roles} onChange={handleChange} maxLength="500" placeholder="List the roles you want, separated by commas" required />
           </Field>
           <Field label="Skills" hint="Separate skills with commas" wide>
-            <textarea name="skills" value={values.skills} onChange={handleChange} maxLength="2000" rows="4" placeholder="React, Node.js, MySQL, Cloudflare" />
+            <textarea name="skills" value={values.skills} onChange={handleChange} maxLength="2000" rows="4" placeholder="e.g., communication, planning, leadership" />
           </Field>
         </div>
       </section>
@@ -218,10 +218,10 @@ function ProfileForm({ error, identity, isSaving, mode = "profile", onCancel, on
         </div>
 
         <div className="profile-grid profile-grid--three">
-          <Field error={fieldErrors.current_ctc} label="Current CTC">
+          <Field error={fieldErrors.current_ctc} label="Current annual pay">
             <input name="current_ctc" type="number" min="0" max={MAX_CTC} step="0.01" value={values.current_ctc} onChange={handleChange} />
           </Field>
-          <Field error={fieldErrors.expected_ctc} label="Expected CTC">
+          <Field error={fieldErrors.expected_ctc} label="Expected annual pay">
             <input name="expected_ctc" type="number" min="0" max={MAX_CTC} step="0.01" value={values.expected_ctc} onChange={handleChange} />
           </Field>
           <Field label="Currency">
@@ -233,10 +233,10 @@ function ProfileForm({ error, identity, isSaving, mode = "profile", onCancel, on
             </select>
           </Field>
           <Field error={fieldErrors.notice_period_days} label="Notice period in days">
-            <input name="notice_period_days" type="number" min="0" max="730" value={values.notice_period_days} onChange={handleChange} placeholder="30" />
+            <input name="notice_period_days" type="number" min="0" max="730" value={values.notice_period_days} onChange={handleChange} />
           </Field>
-          <Field error={fieldErrors.portfolio_url} label="Portfolio URL">
-            <input name="portfolio_url" type="url" value={values.portfolio_url} onChange={handleChange} maxLength="2048" placeholder="https://your-work.example" />
+          <Field error={fieldErrors.portfolio_url} label="Website or portfolio URL">
+            <input name="portfolio_url" type="url" value={values.portfolio_url} onChange={handleChange} maxLength="2048" placeholder="https://your-website.example" />
           </Field>
           <Field error={fieldErrors.linkedin_url} label="LinkedIn URL">
             <input name="linkedin_url" type="url" value={values.linkedin_url} onChange={handleChange} maxLength="2048" placeholder="https://linkedin.com/in/…" />
@@ -261,9 +261,12 @@ function ProfileForm({ error, identity, isSaving, mode = "profile", onCancel, on
   return (
     <main className="onboarding-page">
       <aside className="onboarding-aside">
-        <BrandMark className="brand-mark" /><ThemeToggle className="onboarding-theme-toggle" />
-        <div>
-          <h1>Set up your profile</h1>
+        <div className="onboarding-aside__header">
+          <BrandMark className="brand-mark" />
+          <ThemeToggle className="onboarding-theme-toggle" />
+        </div>
+        <div className="onboarding-aside__content">
+          <h2>Set up your profile</h2>
           <p>Add the details Concourse uses to organize your applications.</p>
         </div>
         <ol className="onboarding-progress">
@@ -272,9 +275,8 @@ function ProfileForm({ error, identity, isSaving, mode = "profile", onCancel, on
         </ol>
       </aside>
       <div className="onboarding-content">
-        <header>
-          <p className="onboarding-kicker">Career profile</p>
-          <h2>Your job search details</h2>
+        <header className="onboarding-content__header">
+          <h1>Your job search details</h1>
           <p>Required fields are marked with an asterisk. You can update everything later.</p>
         </header>
         {form}

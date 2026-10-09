@@ -9,7 +9,7 @@ import {
   publishApplicationUpsert,
   subscribeWorkspaceEvents,
 } from "../../lib/workspace-events";
-import { APPLICATION_STATUSES } from "../tracker-options";
+import { APPLICATION_STATUSES } from "./tracker-options";
 import { subscribeToApplicationChanges } from "./application-sync";
 import ApplicationForm from "./components/ApplicationForm";
 import ApplicationList from "./components/ApplicationList";

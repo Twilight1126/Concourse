@@ -19,6 +19,7 @@
   --color-surface-raised: #ffffff;
   --color-accent-soft: #e9f3ed;
   --color-text-on-dark: #ffffff;
+  --auth-panel-background: linear-gradient(145deg, #176b5b, #163e35);
 }
 
 :root[data-theme="dark"] {
@@ -34,6 +35,7 @@
   --color-accent-soft: #28332f;
   --color-danger: #ff9a91;
   --color-danger-soft: #3a2829;
+  --auth-panel-background: #1a2023;
 }
 
 :root[data-theme="dark"] .dashboard-metric strong,
@@ -45,8 +47,7 @@
 :root[data-theme="dark"] .profile-skills > span:not(.is-empty),
 :root[data-theme="dark"] .tracking-status-path__step.is-complete,
 :root[data-theme="dark"] .tracking-status-guide,
-:root[data-theme="dark"] .tracking-status-count,
-:root[data-theme="dark"] .outreach-preview__mark {
+:root[data-theme="dark"] .tracking-status-count {
   color: #77d7ae;
 }
 

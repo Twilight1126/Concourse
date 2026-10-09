@@ -1,38 +1,6 @@
 export const STAGES = ["saved", "applied", "screening", "interviewing", "offered", "rejected", "ghosted", "withdrawn"];
 export const STAGE_COLORS = ["#a9bbb1", "#317e67", "#75ae96", "#c4933e", "#145c45", "#bc6257", "#89939e", "#b8b7ac"];
 const ACTIVE = new Set(["applied", "screening", "interviewing", "offered"]);
-const PORTALS = [
-  ["LinkedIn", /linkedin/i],
-  ["Indeed", /indeed/i],
-  ["Monster", /monster|foundit/i],
-  ["Naukri", /naukri/i],
-  ["Glassdoor", /glassdoor/i],
-  ["Wellfound", /wellfound|angel\.co/i],
-  ["Instahyre", /instahyre/i],
-  ["Cutshort", /cutshort/i],
-  ["Hirist", /hirist/i],
-  ["Shine", /shine\.com|^shine$/i],
-  ["TimesJobs", /timesjobs/i],
-  ["Internshala", /internshala/i],
-  ["ZipRecruiter", /ziprecruiter/i],
-  ["Dice", /dice\.com|^dice$/i],
-];
-
-export function sourceGroup(application) {
-  const source = application.source?.trim() || "";
-  const url = application.job_url || "";
-  let signal = source;
-  if (!signal || /^(manual|manual \/ unknown)$/i.test(signal)) {
-    try { signal = new URL(url).hostname; } catch { signal = ""; }
-  }
-  const portal = PORTALS.find(([, pattern]) => pattern.test(signal));
-  if (portal) return portal[0];
-  if ((!source && !url) || (/^(manual|manual \/ unknown)$/i.test(source) && !url)) return "Manual";
-  if (source && !/[./:]/.test(source) && !/\b(careers?|jobs?)$/i.test(source)
-    && !/^(manual|company[ _-]portal|company website|company site|career page|career site|direct|greenhouse|lever|workday|darwinbox|zoho recruit)$/i.test(source)) return source;
-  return "Company portal";
-}
-
 export function dayKey(value) {
   if (!value) return null;
   const date = new Date(value);
@@ -68,59 +36,6 @@ function activityCalendar(activity, now) {
     applicationActivity: visibleDays.reduce((sum, day) => sum + day.applications, 0),
     outreachActivity: visibleDays.reduce((sum, day) => sum + day.outreach, 0),
     totalActivity: visibleDays.reduce((sum, day) => sum + day.applications + day.outreach, 0),
-  };
-}
-
-export function dashboardSummary(applications, outreach, now = new Date()) {
-  const counts = Object.fromEntries(STAGES.map((stage) => [stage, 0]));
-  const activity = new Map();
-  const sources = new Map();
-  const applicationById = new Map(applications.map((item) => [String(item.id), item]));
-  const addActivity = (value, kind) => {
-    const key = dayKey(value);
-    if (!key) return;
-    const day = activity.get(key) || { applications: 0, outreach: 0 };
-    day[kind] += 1;
-    activity.set(key, day);
-  };
-
-  applications.forEach((item) => {
-    if (Object.hasOwn(counts, item.status)) counts[item.status] += 1;
-    addActivity(item.applied_at, "applications");
-    const name = sourceGroup(item);
-    const source = sources.get(name) || { name, applications: 0, replies: 0, interviews: 0, offers: 0 };
-    source.applications += 1;
-    if (["interviewing", "offered"].includes(item.status)) source.interviews += 1;
-    if (item.status === "offered") source.offers += 1;
-    sources.set(name, source);
-  });
-  outreach.forEach((item) => {
-    addActivity(item.sent_at, "outreach");
-    const application = applicationById.get(String(item.related_application_id));
-    if (item.status === "replied" && application) {
-      sources.get(sourceGroup(application)).replies += 1;
-    }
-  });
-
-  const calendar = activityCalendar(activity, now);
-
-  const recent = [
-    ...applications.map((item) => ({ ...item, kind: "application" })),
-    ...outreach.map((item) => ({ ...item, kind: "outreach" })),
-  ].sort((a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0));
-
-  const sentOutreach = outreach.filter((item) => item.sent_at);
-  return {
-    total: applications.length,
-    active: applications.filter((item) => ACTIVE.has(item.status)).length,
-    responseRate: sentOutreach.length
-      ? Math.round(100 * sentOutreach.filter((item) => item.status === "replied").length / sentOutreach.length)
-      : null,
-    ghosted: counts.ghosted,
-    counts,
-    ...calendar,
-    sources: [...sources.values()].sort((a, b) => b.applications - a.applications),
-    recent: recent.slice(0, 5),
   };
 }
 

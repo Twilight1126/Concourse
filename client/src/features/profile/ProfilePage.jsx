@@ -61,7 +61,7 @@ function ProfileOverview({ email, profile }) {
       <section className="profile-overview__section" aria-labelledby="professional-heading">
         <header><div><h2 id="professional-heading">Professional direction</h2><p>The context Concourse uses to organize opportunities.</p></div></header>
         <dl className="profile-details-grid">
-          <ProfileValue label="Present company" value={profile.present_company} />
+          <ProfileValue label="Current organization" value={profile.present_company} />
           <ProfileValue label="Current job title" value={profile.current_job_title} />
           <ProfileValue label="Years of experience" value={profile.years_of_experience != null ? `${profile.years_of_experience} years` : null} />
           <ProfileValue label="Preferred roles" value={profile.preferred_roles} />
@@ -77,10 +77,10 @@ function ProfileOverview({ email, profile }) {
       <section className="profile-overview__section" aria-labelledby="availability-heading">
         <header><div><h2 id="availability-heading">Compensation and availability</h2><p>Private details used when reviewing opportunities.</p></div></header>
         <dl className="profile-details-grid profile-details-grid--three">
-          <ProfileValue label="Current CTC" value={formatCompensation(profile.current_ctc, profile.currency)} />
-          <ProfileValue label="Expected CTC" value={formatCompensation(profile.expected_ctc, profile.currency)} />
+          <ProfileValue label="Current annual pay" value={formatCompensation(profile.current_ctc, profile.currency)} />
+          <ProfileValue label="Expected annual pay" value={formatCompensation(profile.expected_ctc, profile.currency)} />
           <ProfileValue label="Notice period" value={profile.notice_period_days != null ? `${profile.notice_period_days} days` : null} />
-          <ProfileValue label="Portfolio" link value={profile.portfolio_url} wide />
+          <ProfileValue label="Website or portfolio" link value={profile.portfolio_url} wide />
           <ProfileValue label="LinkedIn" link value={profile.linkedin_url} wide />
         </dl>
       </section>

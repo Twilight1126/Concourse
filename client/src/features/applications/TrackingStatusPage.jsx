@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { createApplicationUpdate, deleteApplicationUpdate, editApplicationUpdate, getApplication, getApplicationUpdates, updateApplication } from "../../api/applications";
 import { toDateTimeInput } from "../../lib/capture";
 import { publishApplicationUpsert } from "../../lib/workspace-events";
-import { APPLICATION_STATUSES } from "../tracker-options";
+import { APPLICATION_STATUSES } from "./tracker-options";
 import { useAuth } from "../auth/auth-context";
 import LoadingSkeleton from "../../components/LoadingSkeleton";
 import { useActionFeedback } from "../../components/action-feedback-context";

@@ -12,9 +12,9 @@
   min-height: 100dvh;
   padding: 1.25rem 0.9rem;
   color: #f8f7f2;
-  background: linear-gradient(145deg, #176b5b, #163e35);
+  background: var(--auth-panel-background);
 }
-:root[data-theme="dark"] .auth-story { background: #1a2023; border-right: 1px solid var(--color-border); }
+:root[data-theme="dark"] .auth-story { border-right: 1px solid var(--color-border); }
 :root[data-theme="dark"] .auth-kicker { color: #77d7ae; }
 
 .brand-mark {
