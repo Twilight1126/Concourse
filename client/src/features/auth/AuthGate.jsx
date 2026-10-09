@@ -22,7 +22,7 @@ function AuthPage({ error, onSignIn }) {
           <p className="auth-kicker">Your job search workspace</p>
           <h1 id="auth-heading">Run your job search in one place</h1>
           <p>
-            Track applications, manage outreach, and keep every follow-up clear.
+            Save applications and track their progress.
           </p>
         </div>
 
