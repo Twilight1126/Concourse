@@ -208,8 +208,8 @@ account. The Worker rate limit is an approximate, per-location load guard.
 Load `extension/` as an unpacked extension from `chrome://extensions` or
 `edge://extensions`. It adds a compact review card to job pages and Gmail,
 keeps a selected LinkedIn contact for the next outreach, and saves through the
-detected Local or Production API. The local web tab must stay open while the
-extension captures jobs; production uses its own extension session. Job capture prefers structured
+detected Local or Production API. The signed-in web tab must stay open while the
+extension captures jobs in either environment. Job capture prefers structured
 `JobPosting` data, then supported-site selectors, semantic labels, and visible
 text fallbacks. Email message bodies are never read or stored.
 
@@ -252,8 +252,7 @@ The API verifies ES256 access tokens against Supabase's cached signing keys, so
 ordinary authenticated requests do not call Supabase Auth each time. A new
 process needs one key fetch, and profile saves still check the current user
 record to confirm the email. If that connection fails, the API returns 503.
-The production extension has a separate session; the local extension reads the
-active local web session without copying its refresh token.
+The extension reads the active web session without storing its access or refresh token.
 
 For production, Cloudflare uses `/api` with Supabase authentication. The
 Worker receives `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`; the browser

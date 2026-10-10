@@ -5,7 +5,7 @@ import vm from "node:vm";
 
 const source = await readFile(new URL("./background.js", import.meta.url), "utf8");
 
-function harness(fetch) {
+function harness(fetch, options = {}) {
   const local = {
     workspaceUrl: "http://localhost:8787",
     workspaceConnection: {
@@ -17,7 +17,7 @@ function harness(fetch) {
       expiresAt: Math.floor(Date.now() / 1000) + 3600,
     },
   };
-  const pageConnection = { ...local.workspaceConnection };
+  const pageConnection = options.pageConnection || { ...local.workspaceConnection };
   const session = {};
   let listener;
   const area = (values) => ({
@@ -33,8 +33,8 @@ function harness(fetch) {
     storage: { local: area(local), session: area(session) },
     runtime: { onMessage: { addListener(value) { listener = value; } } },
     tabs: {
-      async query() { return [{ id: 1, url: "http://localhost:8787/dashboard" }]; },
-      async sendMessage() { return { ok: true, connection: pageConnection }; },
+      async query() { return options.tabs || [{ id: 1, url: "http://localhost:8787/dashboard" }]; },
+      async sendMessage(_tabId) { return { ok: true, connection: pageConnection }; },
       onRemoved: { addListener() {} },
     },
   };
@@ -48,6 +48,7 @@ function harness(fetch) {
     });
   });
   send.setStoredConnection = (connection) => { local.workspaceConnection = connection; };
+  send.getStoredConnection = () => local.workspaceConnection;
   return send;
 }
 
@@ -122,6 +123,44 @@ test("detects local Concourse and connects without production OAuth", async () =
   assert.equal(connected.ok, true);
   const state = await send({ type: "GET_CONNECTION_STATE", workspaceUrl: detected.workspaceUrl });
   assert.equal(state.connected, true);
+});
+
+test("production connects through the signed-in web tab and never stores its token", async () => {
+  const workspaceUrl = "https://concourse.chiragb0707.workers.dev";
+  const token = "production-test-token";
+  const requests = [];
+  const send = harness(async (url, options) => {
+    requests.push({ url, token: options?.headers?.Authorization });
+    return {
+      ok: true,
+      status: 200,
+      async json() { return { data: { id: 42 } }; },
+    };
+  }, {
+    tabs: [{ id: 2, url: `${workspaceUrl}/applications` }],
+    pageConnection: {
+      workspaceUrl,
+      apiUrl: `${workspaceUrl}/api`,
+      authMode: "supabase",
+      userId: "production-user",
+      accessToken: token,
+    },
+  });
+
+  const detected = await send({ type: "RESOLVE_WORKSPACE" });
+  assert.equal(detected.environment, "Production");
+  const connected = await send({ type: "CONNECT_WORKSPACE", workspaceUrl });
+  assert.equal(connected.ok, true);
+  assert.equal(send.getStoredConnection().accessToken, undefined);
+  assert.equal(send.getStoredConnection().refreshToken, undefined);
+
+  const saved = await send({
+    type: "SAVE_CAPTURE",
+    capture: { type: "application", data: { company_name: "Example", job_title: "Engineer" } },
+  });
+  assert.equal(saved.ok, true);
+  assert.ok(requests.every((request) => request.token === `Bearer ${token}`));
+  assert.ok(requests.some((request) => request.url.endsWith("/applications")));
 });
 
 test("never saves a reviewed local job into a production connection", async () => {

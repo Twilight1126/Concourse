@@ -1,9 +1,5 @@
 import { useEffect } from "react";
-import {
-  authMode,
-  supabaseKey,
-  supabaseUrl,
-} from "../../lib/supabase";
+import { authMode } from "../../lib/supabase";
 import { useAuth } from "../auth/auth-context";
 
 const EXTENSION_SOURCE = "concourse-extension";
@@ -37,11 +33,7 @@ export default function CaptureBridge() {
             authMode,
             userId: session?.user?.id ?? null,
             userEmail: session?.user?.email ?? null,
-            accessToken: window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-              ? session?.access_token ?? null
-              : null,
-            supabaseUrl,
-            supabaseKey,
+            accessToken: session?.access_token ?? null,
           } : null,
           error: isAuthenticated ? null : "Sign in to Concourse before connecting the extension.",
         });

@@ -31,6 +31,9 @@ async function resolveWorkspace() {
   const tabs = await chrome.tabs.query({});
   const localTab = tabs.find((tab) => sameWorkspace(tab.url, LOCAL_WORKSPACE));
   if (localTab) return { workspaceUrl: new URL(localTab.url).origin, environment: "Local" };
+  if (tabs.some((tab) => sameWorkspace(tab.url, PRODUCTION_WORKSPACE))) {
+    return { workspaceUrl: PRODUCTION_WORKSPACE, environment: "Production" };
+  }
   try {
     const response = await fetch("http://localhost:4000/api/health", { signal: AbortSignal.timeout(1000) });
     if (response.ok) return { workspaceUrl: LOCAL_WORKSPACE, environment: "Local" };
@@ -54,12 +57,14 @@ function validatedConnection(connection, workspaceUrl) {
 
 async function readWorkspaceConnection(workspaceUrl) {
   const tabs = await chrome.tabs.query({});
-  const tab = tabs.find((candidate) => sameWorkspace(candidate.url, workspaceUrl));
-  if (!tab) return null;
-  const result = await sendToWorkspace(tab.id, { type: "GET_EXTENSION_CONNECTION" });
-  return result?.ok && result.connection
-    ? validatedConnection(result.connection, workspaceUrl)
-    : null;
+  for (const tab of tabs.filter((candidate) => sameWorkspace(candidate.url, workspaceUrl))) {
+    let result;
+    try {
+      result = await sendToWorkspace(tab.id, { type: "GET_EXTENSION_CONNECTION" });
+    } catch { /* This tab is not ready; another Concourse tab may be signed in. */ }
+    if (result?.ok && result.connection) return validatedConnection(result.connection, workspaceUrl);
+  }
+  return null;
 }
 
 async function sendToWorkspace(tabId, message) {
@@ -76,9 +81,7 @@ async function sendToWorkspace(tabId, message) {
 
 async function connectWorkspace(workspaceUrl) {
   const tabs = await chrome.tabs.query({});
-  const workspaceTab = tabs.find((tab) => sameWorkspace(tab.url, workspaceUrl));
-
-  if (!workspaceTab) {
+  if (!tabs.some((tab) => sameWorkspace(tab.url, workspaceUrl))) {
     await chrome.tabs.create({ url: workspaceUrl, active: true });
     return {
       ok: false,
@@ -86,79 +89,17 @@ async function connectWorkspace(workspaceUrl) {
     };
   }
 
-  const result = await sendToWorkspace(workspaceTab.id, { type: "GET_EXTENSION_CONNECTION" });
-  if (!result?.ok || !result.connection) {
-    return {
-      ok: false,
-      error: result?.error || "Sign in to Concourse, then click Connect again.",
-    };
-  }
-
-  const candidate = validatedConnection(result.connection, workspaceUrl);
-  const connection = isLocalWorkspace(workspaceUrl)
-    ? candidate
-    : await authenticateExtension(candidate);
-  if (isLocalWorkspace(workspaceUrl) && !connection.accessToken) {
-    throw new Error("Sign in to local Concourse before connecting.");
-  }
+  const connection = await readWorkspaceConnection(workspaceUrl);
+  if (!connection?.accessToken) throw new Error("Sign in to Concourse in this browser, then click Connect again.");
   await chrome.storage.local.set({
-    [CONNECTION_KEY]: isLocalWorkspace(workspaceUrl)
-      ? { ...connection, accessToken: null }
-      : connection,
+    [CONNECTION_KEY]: {
+      workspaceUrl: connection.workspaceUrl,
+      apiUrl: connection.apiUrl,
+      authMode: connection.authMode,
+      userId: connection.userId,
+    },
   });
   return { ok: true };
-}
-
-async function authenticateExtension(connection) {
-  if (!connection.supabaseUrl || !connection.supabaseKey) {
-    throw new Error("Production authentication is not configured.");
-  }
-
-  const redirectUrl = chrome.identity.getRedirectURL("supabase-auth");
-  const authorizationUrl = new URL(
-    `${connection.supabaseUrl.replace(/\/$/, "")}/auth/v1/authorize`,
-  );
-  authorizationUrl.searchParams.set("provider", "google");
-  authorizationUrl.searchParams.set("redirect_to", redirectUrl);
-
-  const responseUrl = await chrome.identity.launchWebAuthFlow({
-    url: authorizationUrl.href,
-    interactive: true,
-  });
-  if (!responseUrl) throw new Error("Extension sign-in was cancelled.");
-
-  const callback = new URL(responseUrl);
-  const params = new URLSearchParams(callback.hash.slice(1));
-  const accessToken = params.get("access_token");
-  const refreshToken = params.get("refresh_token");
-  const expiresIn = Number(params.get("expires_in"));
-  const authError = params.get("error_description") || params.get("error");
-
-  if (authError || !accessToken || !refreshToken) {
-    throw new Error(authError || "Extension sign-in did not return a session.");
-  }
-
-  const userResponse = await fetch(
-    `${connection.supabaseUrl.replace(/\/$/, "")}/auth/v1/user`,
-    {
-      headers: {
-        apikey: connection.supabaseKey,
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  );
-  const user = await userResponse.json().catch(() => ({}));
-  if (!userResponse.ok) throw new Error("Could not verify the extension account.");
-  if (connection.userId && user.id !== connection.userId) {
-    throw new Error(`Connect with ${connection.userEmail || "the same Concourse account"}.`);
-  }
-
-  return {
-    ...connection,
-    accessToken,
-    refreshToken,
-    expiresAt: Math.floor(Date.now() / 1000) + (expiresIn || 3600),
-  };
 }
 
 async function connectionState(workspaceUrl) {
@@ -188,46 +129,21 @@ async function authenticatedConnection(workspaceUrl) {
   }
   if (connection.authMode !== "supabase") throw new Error("Reconnect Concourse to use your signed-in account.");
   validatedConnection(connection, workspaceUrl);
-  if (isLocalWorkspace(workspaceUrl)) {
-    const current = await readWorkspaceConnection(workspaceUrl);
-    if (!current?.accessToken || current.userId !== connection.userId) {
-      throw new Error("Sign in to the same local Concourse account, then reconnect.");
-    }
-    return current;
-  }
-  if (connection.accessToken && connection.expiresAt * 1000 > Date.now() + 60_000) {
-    return connection;
-  }
-  if (!connection.refreshToken || !connection.supabaseUrl || !connection.supabaseKey) {
-    throw new Error("Your extension session expired. Connect Concourse again.");
-  }
-
-  const response = await fetch(
-    `${connection.supabaseUrl.replace(/\/$/, "")}/auth/v1/token?grant_type=refresh_token`,
-    {
-      method: "POST",
-      headers: {
-        apikey: connection.supabaseKey,
-        "Content-Type": "application/json",
+  if (connection.accessToken || connection.refreshToken) {
+    await chrome.storage.local.set({
+      [CONNECTION_KEY]: {
+        workspaceUrl: connection.workspaceUrl,
+        apiUrl: connection.apiUrl,
+        authMode: connection.authMode,
+        userId: connection.userId,
       },
-      body: JSON.stringify({ refresh_token: connection.refreshToken }),
-    },
-  );
-
-  if (!response.ok) {
-    await chrome.storage.local.remove(CONNECTION_KEY);
-    throw new Error("Your extension session expired. Connect Concourse again.");
+    });
   }
-
-  const session = await response.json();
-  const refreshed = {
-    ...connection,
-    accessToken: session.access_token,
-    refreshToken: session.refresh_token,
-    expiresAt: Math.floor(Date.now() / 1000) + session.expires_in,
-  };
-  await chrome.storage.local.set({ [CONNECTION_KEY]: refreshed });
-  return refreshed;
+  const current = await readWorkspaceConnection(workspaceUrl);
+  if (!current?.accessToken || current.userId !== connection.userId) {
+    throw new Error("Keep Concourse open and signed in to the same account, then reconnect.");
+  }
+  return current;
 }
 
 async function saveCapture(capture, tabId, statusOverride) {

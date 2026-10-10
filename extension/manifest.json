@@ -1,15 +1,14 @@
 {
   "manifest_version": 3,
   "name": "Concourse Capture",
-  "version": "0.7.10",
+  "version": "0.7.11",
   "description": "Review and save job applications in Concourse. Gmail outreach tracking is in progress.",
-  "permissions": ["activeTab", "identity", "scripting", "storage"],
+  "permissions": ["activeTab", "scripting", "storage"],
   "host_permissions": [
     "http://localhost:8787/*",
     "http://127.0.0.1:8787/*",
     "http://localhost:4000/*",
     "http://127.0.0.1:4000/*",
-    "https://*.supabase.co/*",
     "https://concourse.chiragb0707.workers.dev/*"
   ],
   "action": {
