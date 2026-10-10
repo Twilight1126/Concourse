@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Concourse Capture",
-  "version": "0.7.9",
-  "description": "Capture job applications and outreach metadata into Concourse.",
+  "version": "0.7.10",
+  "description": "Review and save job applications in Concourse. Gmail outreach tracking is in progress.",
   "permissions": ["activeTab", "identity", "scripting", "storage"],
   "host_permissions": [
     "http://localhost:8787/*",

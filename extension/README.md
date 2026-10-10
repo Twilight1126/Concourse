@@ -13,7 +13,7 @@ The public [privacy policy](https://concourse.chiragb0707.workers.dev/privacy.ht
 6. Start the local API and web app, sign in to local Concourse, then open the extension and select **Connect to Concourse**. It detects Local when the local app or API is running. If neither is running, it selects Production.
 7. On the job-description page, check and correct the card, then save once. The details lock and the card becomes a small Concourse icon. Drag the card header if it covers the job site. Apply on the job site. Concourse marks Applied when it recognizes confirmation; otherwise open the icon and select **I applied — mark Applied** after submitting.
    After Applied, the tracker link uses a visible application-status link when the site provides one, or the application page reached at that point.
-8. Gmail compose windows receive the same metadata-only review card after Send.
+8. Gmail outreach tracking is in progress. Gmail compose windows currently show a metadata-only review card after Send.
 
 ## Regular users
 
