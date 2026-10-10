@@ -45,6 +45,37 @@ test("admin summary uses the signed-in user's token for its RPC", async () => {
   }
 });
 
+test("admin summary reads production API metrics with Analytics SQL aggregates", async () => {
+  const originalFetch = globalThis.fetch;
+  let query;
+  globalThis.fetch = async (url) => jwksResponse(url) || Response.json({ members: 1, applications: 1 });
+  try {
+    const currentMinute = Math.floor(Date.now() / 60000) * 60;
+    const analyticsEnv = {
+      ...env,
+      ANALYTICS_SQL: {
+        async query(request) {
+          query = request.query;
+          return { data: [{ minute: currentMinute, requests: 4, errors: 1, average_ms: 250 }] };
+        },
+      },
+    };
+    const request = new Request("https://concourse.test/api/admin/summary", {
+      headers: { Authorization: `Bearer ${signedToken(env.SUPABASE_URL, "admin-id")}` },
+    });
+    const response = await handleAdminRequest(request, analyticsEnv, "/api/admin/summary");
+    const { operations } = (await response.json()).data;
+    assert.equal(operations.api.status, "active");
+    assert.equal(operations.api.requests, 4);
+    assert.equal(operations.api.errors, 1);
+    assert.equal(operations.api.average_ms, 250);
+    assert.match(query, /COUNT\(\).*countIf\(.*AVG\(double2\)/s);
+    assert.doesNotMatch(query, /_sample_interval/);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("admin users denies a signed-in user without membership", async () => {
   const originalFetch = globalThis.fetch;
   globalThis.fetch = async (url) => jwksResponse(url) || Response.json({ code: "42501" }, { status: 403 });

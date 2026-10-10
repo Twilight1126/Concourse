@@ -46,9 +46,9 @@ async function getWorkerOperations(env) {
   try {
     const result = await env.ANALYTICS_SQL.query({
       query: `SELECT intDiv(toUInt32(timestamp), 60) * 60 AS minute,
-        SUM(_sample_interval) AS requests,
-        SUM(if(double1 >= 500, _sample_interval, 0)) AS errors,
-        SUM(double2 * _sample_interval) / SUM(_sample_interval) AS average_ms
+        COUNT() AS requests,
+        countIf(double1 >= 500) AS errors,
+        AVG(double2) AS average_ms
         FROM events.analyticsEngine."concourse_api_metrics"
         WHERE timestamp >= $start GROUP BY minute ORDER BY minute ASC LIMIT 60`,
       params: { start: new Date(Date.now() - 60 * 60000).toISOString() },
