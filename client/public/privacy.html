@@ -26,15 +26,15 @@
     <main>
       <header><img src="/brand-mark.svg" alt="" width="32" height="32" /><strong>Concourse</strong></header>
       <h1>Concourse Capture privacy policy</h1>
-      <p class="effective-date">Effective date: 9 October 2026</p>
+      <p class="effective-date">Effective date: 10 October 2026</p>
       <p>Concourse Capture is a Microsoft Edge extension for reviewing job opportunities and saving application and outreach records to a user's Concourse workspace. For privacy questions or requests, contact <a href="mailto:chiragbsanil07@gmail.com">chiragbsanil07@gmail.com</a>.</p>
 
       <h2>Information the extension handles</h2>
       <ul>
-        <li><strong>Account and sign-in:</strong> The extension uses Google sign-in through Supabase Auth to connect to the user's Concourse account. It receives and stores session tokens and an account identifier in the browser. It does not receive the user's Google password.</li>
+        <li><strong>Account and sign-in:</strong> The user signs in to Concourse with Google through Supabase Auth. The extension reads the signed-in Concourse tab's current access token when connecting or saving a record. It stores the workspace connection and account identifier, but does not store access or refresh tokens or receive the user's Google password.</li>
         <li><strong>Jobs and applications:</strong> On job or application pages, the extension reads relevant page content to suggest details such as employer, job title, job location, salary range, experience requirements, resume filename, and the job-page URL. The user can review and edit these details before saving them. The extension may also use the expected salary saved in the user's Concourse profile when creating an application record.</li>
         <li><strong>Outreach:</strong> On Gmail, the extension offers a review panel for saving outreach metadata: sender and recipient addresses, contact and company names, subject, attachment filename, outreach type, and draft or sent status. It does not save email message bodies or attachment contents. A user may also select a LinkedIn contact to carry that person's name, title, and profile URL into the outreach form.</li>
-        <li><strong>Browser-local information:</strong> The extension stores its workspace connection, sign-in session, theme preference, and pending contact details in browser storage. It temporarily keeps job-review drafts in browser session storage so a user can finish an application flow.</li>
+        <li><strong>Browser-local information:</strong> The extension stores its workspace connection, account identifier, theme preference, and pending contact details in browser storage. It temporarily keeps job-review drafts in browser session storage so a user can finish an application flow.</li>
       </ul>
       <p>The extension does not collect a general browsing-history log, device location, health information, payment-card details, or keystrokes. It reads supported pages to provide the review features; it sends a job or outreach record to Concourse when the user chooses to save it.</p>
 
