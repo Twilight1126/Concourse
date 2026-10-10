@@ -1,1 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M46 17a22 22 0 1 0 0 30" stroke="#108064" stroke-width="9" stroke-linecap="round"/><rect x="43" y="28" width="9" height="9" rx="2" fill="#108064"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="brand-gloss" x1="8" y1="8" x2="51" y2="55" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#62e0ba"/>
+      <stop offset="0.43" stop-color="#20aa85"/>
+      <stop offset="1" stop-color="#0b725d"/>
+    </linearGradient>
+  </defs>
+  <path d="M46 17a22 22 0 1 0 0 30" stroke="url(#brand-gloss)" stroke-width="9" stroke-linecap="round"/>
+  <path d="M24 12c-7 2-12 7-15 13" stroke="#fff" stroke-opacity=".34" stroke-width="2" stroke-linecap="round"/>
+  <rect x="43" y="28" width="9" height="9" rx="2" fill="url(#brand-gloss)"/>
+  <path d="M45 30h4" stroke="#fff" stroke-opacity=".36" stroke-linecap="round"/>
+</svg>

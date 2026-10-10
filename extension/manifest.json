@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Concourse Capture",
-  "version": "0.7.8",
+  "version": "0.7.9",
   "description": "Capture job applications and outreach metadata into Concourse.",
   "permissions": ["activeTab", "identity", "scripting", "storage"],
   "host_permissions": [

@@ -1,5 +1,7 @@
 # Concourse Capture extension
 
+The public [privacy policy](https://concourse.chiragb0707.workers.dev/privacy.html) is maintained in `client/public/privacy.html`.
+
 ## Developer setup
 
 1. Open `chrome://extensions` or `edge://extensions`.
