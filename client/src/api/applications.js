@@ -1,9 +1,5 @@
 import { apiRequest } from "./client";
 
-export function getApplications() {
-    return apiRequest('/applications')
-}
-
 export function getApplicationPage({ page, search, status, source }) {
     const params = new URLSearchParams({ page: String(page), search, status, source })
     return apiRequest(`/applications/page?${params}`)

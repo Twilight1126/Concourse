@@ -1,6 +1,5 @@
 import { cloneElement, useState } from "react";
 import { ArrowRight, CheckCircle, UserCircle } from "@phosphor-icons/react";
-import { useSessionDraft } from "../../../lib/use-session-draft";
 import BrandMark from "../../../components/BrandMark";
 import { ThemeToggle } from "../../../components/Theme";
 import "./ProfileForm.css";
@@ -115,7 +114,7 @@ function Field({ children, error, hint, label, required = false, wide = false })
 }
 
 function ProfileForm({ error, identity, isSaving, mode = "profile", onCancel, onErrorDismiss, onSave, profile }) {
-  const [values, setValues, clearDraft] = useSessionDraft(`concourse:draft:profile:${identity.id}`, initialValues(profile, identity));
+  const [values, setValues] = useState(() => initialValues(profile, identity));
   const [fieldErrors, setFieldErrors] = useState({});
   const [failedAvatar, setFailedAvatar] = useState(null);
   const email = profile?.email ?? identity?.email ?? "";
@@ -142,7 +141,7 @@ function ProfileForm({ error, identity, isSaving, mode = "profile", onCancel, on
       return;
     }
 
-    if (await onSave(values)) clearDraft();
+    await onSave(values);
   }
 
   const form = (
@@ -247,7 +246,7 @@ function ProfileForm({ error, identity, isSaving, mode = "profile", onCancel, on
       {error && <p className="inline-error profile-save-error" role="alert">{error}</p>}
 
       <div className="profile-actions">
-        {onCancel && <button type="button" className="button-secondary" onClick={() => { clearDraft(); onCancel(); }}>Cancel</button>}
+        {onCancel && <button type="button" className="button-secondary" onClick={onCancel}>Cancel</button>}
         <button type="submit" className="button-primary" disabled={isSaving}>
           {isSaving ? "Saving changes…" : mode === "onboarding" ? "Finish setup" : "Save changes"}
           {!isSaving && <ArrowRight size={18} weight="bold" aria-hidden="true" />}

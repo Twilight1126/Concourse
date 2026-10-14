@@ -3,14 +3,16 @@ import { useState } from "react";
 import { useAuth } from "../auth/auth-context";
 import { useProfile } from "./profile-context";
 import ProfileForm from "./components/ProfileForm";
+import SensitiveValue from "./components/SensitiveValue";
 import { useActionFeedback } from "../../components/action-feedback-context";
 
-function ProfileValue({ label, link = false, value, wide = false }) {
+function ProfileValue({ label, link = false, sensitive = false, value, wide = false }) {
   return (
     <div className={`profile-detail${wide ? " profile-detail--wide" : ""}`}>
       <dt>{label}</dt>
       <dd className={value ? undefined : "is-empty"}>
-        {value && link ? <a href={value} rel="noreferrer" target="_blank">{value}</a> : value || "Not added"}
+        {value && sensitive ? <SensitiveValue label={label} value={value} />
+          : value && link ? <a href={value} rel="noreferrer" target="_blank">{value}</a> : value || "Not added"}
       </dd>
     </div>
   );
@@ -46,14 +48,14 @@ function ProfileOverview({ email, profile }) {
         <div>
           <h2 id="identity-heading">{profile.display_name}</h2>
           <p>{profile.current_job_title || profile.preferred_roles}</p>
-          <span><CheckCircle size={16} weight="fill" aria-hidden="true" />{email}</span>
+          <div className="profile-overview__email"><CheckCircle size={16} weight="fill" aria-hidden="true" />{email}</div>
         </div>
       </section>
 
       <section className="profile-overview__section" aria-labelledby="contact-heading">
         <header><div><h2 id="contact-heading">Personal details</h2><p>Your identity and contact preferences.</p></div></header>
         <dl className="profile-details-grid">
-          <ProfileValue label="Phone" value={profile.phone} />
+          <ProfileValue label="Phone" sensitive value={profile.phone} />
           <ProfileValue label="Location" value={profile.location} />
         </dl>
       </section>
@@ -77,8 +79,8 @@ function ProfileOverview({ email, profile }) {
       <section className="profile-overview__section" aria-labelledby="availability-heading">
         <header><div><h2 id="availability-heading">Compensation and availability</h2><p>Private details used when reviewing opportunities.</p></div></header>
         <dl className="profile-details-grid profile-details-grid--three">
-          <ProfileValue label="Current annual pay" value={formatCompensation(profile.current_ctc, profile.currency)} />
-          <ProfileValue label="Expected annual pay" value={formatCompensation(profile.expected_ctc, profile.currency)} />
+          <ProfileValue label="Current annual pay" sensitive value={formatCompensation(profile.current_ctc, profile.currency)} />
+          <ProfileValue label="Expected annual pay" sensitive value={formatCompensation(profile.expected_ctc, profile.currency)} />
           <ProfileValue label="Notice period" value={profile.notice_period_days != null ? `${profile.notice_period_days} days` : null} />
           <ProfileValue label="Website or portfolio" link value={profile.portfolio_url} wide />
           <ProfileValue label="LinkedIn" link value={profile.linkedin_url} wide />

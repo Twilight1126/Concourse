@@ -6,6 +6,7 @@ import { useAuth } from "../auth/auth-context";
 import ProfileForm from "./components/ProfileForm";
 import { useActionFeedback } from "../../components/action-feedback-context";
 import { ProfileContext } from "./profile-context";
+import { clearSessionDraft } from "../../lib/use-session-draft";
 
 function ProfileGate({ children }) {
   const { notify } = useActionFeedback();
@@ -18,6 +19,10 @@ function ProfileGate({ children }) {
   const [loadError, setLoadError] = useState(null);
   const [saveError, setSaveError] = useState(null);
   const [retryVersion, setRetryVersion] = useState(0);
+
+  useEffect(() => {
+    if (session?.user?.id) clearSessionDraft(`concourse:draft:profile:${session.user.id}`);
+  }, [session?.user?.id]);
 
   useEffect(() => {
     let active = true;
